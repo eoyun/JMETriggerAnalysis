@@ -272,7 +272,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple_MiniAOD',
   createSkim = cms.untracked.bool(True), # applies selection of events based on collections jets,met,muons etc bellow - Note: will create dijet skim unless the isMuonDataset is used.
   isMuonDataset = cms.untracked.bool(opts.isMuonData), # use this only for muon dataset to apply the muons criteria in selection
   createTriggerQuantities = cms.untracked.bool(True), # creates branches with trigger objects and if also one wants (from the boolean bellow) offline quantities to monitor
-  createOfflineQuantities = cms.untracked.bool(False),
+  createOfflineQuantities = cms.untracked.bool(True),
   jets = cms.InputTag(userJetsAK4PFPuppiCollection),
   muons = cms.InputTag(userMuonsCollection),
   pfmet = cms.InputTag("slimmedMETs"),
@@ -546,7 +546,7 @@ if not opts.isMuonData:
           emulatedThreshold = cms.double(extract_threshold(_hltPathUnv[0])),
         ))
         process.triggerFlagsTask.add(getattr(process, _triggerFlagsModName))
-        #setattr(process.JMETriggerNTuple.bools, _hltPathUnv[0]+'_L1TSeedAccept', cms.InputTag(_triggerFlagsModName+':L1TSeedAccept')) # L1 Seed decision
+        setattr(process.JMETriggerNTuple.bools, _hltPathUnv[0]+'_L1TSeedAccept', cms.InputTag(_triggerFlagsModName+':L1TSeedAccept')) # L1 Seed decision
         setattr(process.JMETriggerNTuple.bools, _hltPathUnv[0]+'_HLTPathAccept', cms.InputTag(_triggerFlagsModName+':HLTPathAccept')) # Trigger bit decision or emulated decision from denominator Trigger Object
         setattr(process.JMETriggerNTuple.bools, _hltPathUnv[0]+'_HLTDenominatorPathAccept', cms.InputTag(_triggerFlagsModName+':HLTDenPathAccept'))
 
@@ -597,7 +597,7 @@ else:
       process.triggerFlagsTask.add(getattr(process, _triggerFlagsModName))
 
       # in the 
-      #setattr(process.JMETriggerNTuple.bools, _hltPathUnv[0]+'_L1TSeedAccept', cms.InputTag(_triggerFlagsModName+':L1TSeedAccept'))
+      setattr(process.JMETriggerNTuple.bools, _hltPathUnv[0]+'_L1TSeedAccept', cms.InputTag(_triggerFlagsModName+':L1TSeedAccept'))
       setattr(process.JMETriggerNTuple.bools, _hltPathUnv[0]+'_HLTPathAccept', cms.InputTag(_triggerFlagsModName+':HLTPathAccept'))
     
 
