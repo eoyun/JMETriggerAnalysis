@@ -177,6 +177,9 @@ def create(opts,args):
             os.mkdir(STOREDIR)
     
     for sample, sample_attributes in samples.items():
+        if os.path.exists(os.path.join(STOREDIR,sample)):
+            continue
+
         name=sample
 
         isMuonData = "False"
