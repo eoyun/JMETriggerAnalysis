@@ -569,7 +569,7 @@ void JMETriggerAnalysisDriverRun3::analyze(){
   }
 }
 
-/*
+
 bool JMETriggerAnalysisDriverRun3::hltJetTrigger(std::string const& key) const {
   if(key == "HLT_PFJet140") return value<bool>("HLT_PFJet140");
   else if(key == "HLT_PFJet320") return value<bool>("HLT_PFJet320");
@@ -600,7 +600,7 @@ bool JMETriggerAnalysisDriverRun3::hltMETTrigger(std::string const& key) const {
 
   return false;
 }
-*/
+
 
 
 bool JMETriggerAnalysisDriverRun3::runPeriod(std::string const& key) const {

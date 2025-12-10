@@ -1,0 +1,12 @@
+# Unix submit description file
+Universe = vanilla
+transfer_input_files = /afs/cern.ch/user/y/yeo/tmp/x509up
+Executable = ./Scr/2024D_JETMET0_250201_v1/test.sh
+request_memory = 1000
+should_transfer_files   = Yes
+arguments = $(ProcId)
+output = ./Scr/2024D_JETMET0_250201_v1/log/$(ProcId).out
+error = ./Scr/2024D_JETMET0_250201_v1/log/$(ProcId).err
+log = ./Scr/2024D_JETMET0_250201_v1/log/$(ProcId).log
++MaxRuntime = 36000
+Queue 266

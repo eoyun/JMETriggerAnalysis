@@ -4,12 +4,25 @@ import datetime
 import numpy as np
 import ROOT
 import argparse
+import LumiMask
+import pandas
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--filename", dest="filename", action="store") 
 args = parser.parse_args()
 
 ROOT.ROOT.EnableImplicitMT()
+def declare_struc():
+    if not hasattr(ROOT, 'RDFAddArray'):
+        ROOT.gInterpreter.Declare('''
+        ROOT::RDF::RNode RDFAddArray(ROOT::RDF::RNode df, ROOT::RVec<double> &v, const std::string &name) 
+        {
+            return df.Define(name, [&](unsigned c) { return v[c]; }, {"counter"});
+        }
+        unsigned counter = 0;
+
+        ''')
 
 def dphi(phi):
     """Calculates delta phi between objects"""
@@ -22,13 +35,14 @@ def dphi(phi):
 
 def main():
 
-    print("root://xrootd-cms.infn.it/"+args.filename)
+    #print("root://xrootd-cms.infn.it/"+args.filename)
     #df = ROOT.RDataFrame("Events", "DYJetsToLL_M_50_2022.root")
     #df = ROOT.RDataFrame("Events","root://xrootd-cms.infn.it//store/data/Run2023B/JetMET0/NANOAOD/22Sep2023-v1/2540000/060eed3c-d114-4135-b3f6-2cc6c8cf4c19.root")
     df = ROOT.RDataFrame("Events","root://xrootd-cms.infn.it//store/data/Run2023D/JetMET0/NANOAOD/22Sep2023_v1-v1/2530000/90b4ce31-2fb1-4822-8ca4-aef2c302761d.root")
     #df = ROOT.RDataFrame("Events","root://xrootd-cms.infn.it//store/mc/Run3Winter23NanoAOD/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/NANOAODSIM/126X_mcRun3_2023_forPU65_v1-v1/2540000/a1c3034d-ce5a-4d4c-9ee6-939b6c04edb5.root")
     df = df.Filter("nJet >= 2", "Events with exactly two muons")
     #df = df.Filter("Muon_charge[0] + Muon_charge[1] == 0", "Muons with opposite charge")
+    declare_struc()
 
     #df_dimuon = df.Define("Dimuon_mass", "InvariantMass(Muon_pt, Muon_eta, Muon_phi, Muon_mass)")
     df = df.Define("Lead_jet", "Jet_pt[0]")
@@ -86,6 +100,19 @@ def main():
     df = df.Define("hlt_Jet_matched_phi","hlt_Jet_phi[Jet_hlt_matched_index[0]]")
     #print(df.Take['vector<int>']("Jet_hlt_matched_index").GetValue())
     #df_delta_phi = df.Define("Delta_phi","dphi(Jet_phi)")
+    print(type(df.Take['unsigned int']('run').GetValue()))
+    LumiMask_ = LumiMask.lumimask()(df.Take[ROOT.UInt_t]("run").GetValue(),df.Take[ROOT.UInt_t]("luminosityBlock").GetValue())
+    print(LumiMask_)
+    #df = df.Define("LumiMask","LumiMask.compare_lumi(run,luminosityBlock)")
+    #df = df.Define("LumiMask",ROOT.std.vector("unsigned int")(LumiMask_)) 
+    #df = df.Define("test",df.Take[ROOT.UInt_t]("run").GetValue()) 
+    print("hello")
+    df = df.Define("counter","counter++")
+    Lumi_arr = ROOT.VecOps.AsRVec(LumiMask_)
+    df = ROOT.RDFAddArray(ROOT.RDF.AsRNode(df),Lumi_arr,"LumiMask")
+    print(df.AsNumpy(columns=["LumiMask"]))
+    #df = df.Define("LumiMask",LumiMask.lumimask()(df.Take[ROOT.UInt_t]("run").GetValue(),df.Take[ROOT.UInt_t]("luminosityBlock").GetValue())) 
+    #df = df.Filter("LumiMask","") 
     df = df.Filter("Jet_hlt_matched_index[0]!=-1","") 
     #df_after = df.Filter("Delta_phi>2.7","") 
     #df_after = df_after.Filter("alpha < 0.1","") 
