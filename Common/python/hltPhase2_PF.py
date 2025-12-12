@@ -168,13 +168,17 @@ def customise_hltPhase2_PF(process):
 
 def customise_hltPhase2_PF(process):
 
-    process.particleFlowTmpBarrel.useEGammaFilters = False
-    process.particleFlowTmpBarrel.useEGammaElectrons = False
-    process.particleFlowTmpBarrel.usePFConversions = False
-    process.particleFlowTmpBarrel.usePFDecays = False
-    process.particleFlowTmpBarrel.usePFNuclearInteractions = False
-    process.particleFlowTmpBarrel.useProtectionsForJetMET = False
-    process.pfTrack.GsfTracksInEvents = False
+    # Configure PF modules only if they exist (for compatibility with different tracking configs)
+    if hasattr(process, 'particleFlowTmpBarrel'):
+        process.particleFlowTmpBarrel.useEGammaFilters = False
+        process.particleFlowTmpBarrel.useEGammaElectrons = False
+        process.particleFlowTmpBarrel.usePFConversions = False
+        process.particleFlowTmpBarrel.usePFDecays = False
+        process.particleFlowTmpBarrel.usePFNuclearInteractions = False
+        process.particleFlowTmpBarrel.useProtectionsForJetMET = False
+
+    if hasattr(process, 'pfTrack'):
+        process.pfTrack.GsfTracksInEvents = False
 
     # redefining the PFBlockProducer removing displaced tracks
     particleFlowBlock = cms.EDProducer("PFBlockProducer",

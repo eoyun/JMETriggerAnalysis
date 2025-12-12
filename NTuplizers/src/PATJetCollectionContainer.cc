@@ -12,6 +12,7 @@ PATJetCollectionContainer::PATJetCollectionContainer(const std::string& name,
 void PATJetCollectionContainer::clear() {
   energy_.clear();
   pt_.clear();
+  pt2_.clear();
   eta_.clear();
   phi_.clear();
   mass_.clear();
@@ -55,6 +56,7 @@ void PATJetCollectionContainer::clear() {
 void PATJetCollectionContainer::reserve(const size_t vec_size) {
   energy_.reserve(vec_size);
   pt_.reserve(vec_size);
+  pt2_.reserve(vec_size);
   eta_.reserve(vec_size);
   phi_.reserve(vec_size);
   mass_.reserve(vec_size);
@@ -80,6 +82,7 @@ void PATJetCollectionContainer::reserve(const size_t vec_size) {
 void PATJetCollectionContainer::emplace_back(const pat::Jet& obj) {
   energy_.emplace_back(obj.energy());
   pt_.emplace_back(obj.pt());
+  pt2_.emplace_back(obj.pt() * obj.pt());
   eta_.emplace_back(obj.eta());
   phi_.emplace_back(obj.phi());
   mass_.emplace_back(obj.mass());

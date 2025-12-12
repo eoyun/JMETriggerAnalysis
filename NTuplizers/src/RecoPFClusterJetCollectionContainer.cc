@@ -9,6 +9,7 @@ RecoPFClusterJetCollectionContainer::RecoPFClusterJetCollectionContainer(const s
 
 void RecoPFClusterJetCollectionContainer::clear() {
   pt_.clear();
+  pt2_.clear();
   eta_.clear();
   phi_.clear();
   mass_.clear();
@@ -18,6 +19,7 @@ void RecoPFClusterJetCollectionContainer::clear() {
 
 void RecoPFClusterJetCollectionContainer::reserve(const size_t vec_size) {
   pt_.reserve(vec_size);
+  pt2_.reserve(vec_size);
   eta_.reserve(vec_size);
   phi_.reserve(vec_size);
   mass_.reserve(vec_size);
@@ -27,6 +29,7 @@ void RecoPFClusterJetCollectionContainer::reserve(const size_t vec_size) {
 
 void RecoPFClusterJetCollectionContainer::emplace_back(const reco::PFClusterJet& obj) {
   pt_.emplace_back(obj.pt());
+  pt2_.emplace_back(obj.pt() * obj.pt());
   eta_.emplace_back(obj.eta());
   phi_.emplace_back(obj.phi());
   mass_.emplace_back(obj.mass());

@@ -11,6 +11,7 @@ RecoPFJetCollectionContainer::RecoPFJetCollectionContainer(const std::string& na
 void RecoPFJetCollectionContainer::clear() {
   energy_.clear();
   pt_.clear();
+  pt2_.clear();
   eta_.clear();
   phi_.clear();
   mass_.clear();
@@ -52,6 +53,7 @@ void RecoPFJetCollectionContainer::clear() {
 void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
   energy_.reserve(vec_size);
   pt_.reserve(vec_size);
+  pt2_.reserve(vec_size);
   eta_.reserve(vec_size);
   phi_.reserve(vec_size);
   mass_.reserve(vec_size);
@@ -77,6 +79,7 @@ void RecoPFJetCollectionContainer::reserve(const size_t vec_size) {
 void RecoPFJetCollectionContainer::emplace_back(const reco::PFJet& obj) {
   energy_.emplace_back(obj.energy());
   pt_.emplace_back(obj.pt());
+  pt2_.emplace_back(obj.pt() * obj.pt());
   eta_.emplace_back(obj.eta());
   phi_.emplace_back(obj.phi());
   mass_.emplace_back(obj.mass());

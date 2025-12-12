@@ -19,6 +19,7 @@ public:
   
   std::vector<float>& vec_energy() { return energy_; }
   std::vector<float>& vec_pt() { return pt_; }
+  std::vector<float>& vec_pt2() { return pt2_; }
   std::vector<float>& vec_eta() { return eta_; }
   std::vector<float>& vec_phi() { return phi_; }
   std::vector<float>& vec_mass() { return mass_; }
@@ -60,6 +61,7 @@ public:
 protected:
   std::vector<float> energy_;
   std::vector<float> pt_;
+  std::vector<float> pt2_;
   std::vector<float> eta_;
   std::vector<float> phi_;
   std::vector<float> mass_;

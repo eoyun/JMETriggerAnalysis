@@ -514,6 +514,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
     this->addBranch(l1tPFCandidateCollectionContainer_i.name() + "_pdgId",
                     &l1tPFCandidateCollectionContainer_i.vec_pdgId());
     this->addBranch(l1tPFCandidateCollectionContainer_i.name() + "_pt", &l1tPFCandidateCollectionContainer_i.vec_pt());
+    this->addBranch(l1tPFCandidateCollectionContainer_i.name() + "_pt2", &l1tPFCandidateCollectionContainer_i.vec_pt2());
     this->addBranch(l1tPFCandidateCollectionContainer_i.name() + "_eta",
                     &l1tPFCandidateCollectionContainer_i.vec_eta());
     this->addBranch(l1tPFCandidateCollectionContainer_i.name() + "_phi",
@@ -532,6 +533,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &recoPFCandidateCollectionContainer_i.vec_pdgId());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_pt",
                     &recoPFCandidateCollectionContainer_i.vec_pt());
+    this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_pt2",
+                    &recoPFCandidateCollectionContainer_i.vec_pt2());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_eta",
                     &recoPFCandidateCollectionContainer_i.vec_eta());
     this->addBranch(recoPFCandidateCollectionContainer_i.name() + "_phi",
@@ -563,6 +566,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &patPackedCandidateCollectionContainer_i.vec_pdgId());
     this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_pt",
                     &patPackedCandidateCollectionContainer_i.vec_pt());
+    this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_pt2",
+                    &patPackedCandidateCollectionContainer_i.vec_pt2());
     this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_eta",
                     &patPackedCandidateCollectionContainer_i.vec_eta());
     this->addBranch(patPackedCandidateCollectionContainer_i.name() + "_phi",
@@ -584,6 +589,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
                     &patPackedGenParticleCollectionContainer_i.vec_pdgId());
     this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_pt",
                     &patPackedGenParticleCollectionContainer_i.vec_pt());
+    this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_pt2",
+                    &patPackedGenParticleCollectionContainer_i.vec_pt2());
     this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_eta",
                     &patPackedGenParticleCollectionContainer_i.vec_eta());
     this->addBranch(patPackedGenParticleCollectionContainer_i.name() + "_phi",
@@ -600,6 +607,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
 
   for (auto& recoGenJetCollectionContainer_i : v_recoGenJetCollectionContainer_) {
     this->addBranch(recoGenJetCollectionContainer_i.name() + "_pt", &recoGenJetCollectionContainer_i.vec_pt());
+    this->addBranch(recoGenJetCollectionContainer_i.name() + "_pt2", &recoGenJetCollectionContainer_i.vec_pt2());
     this->addBranch(recoGenJetCollectionContainer_i.name() + "_eta", &recoGenJetCollectionContainer_i.vec_eta());
     this->addBranch(recoGenJetCollectionContainer_i.name() + "_phi", &recoGenJetCollectionContainer_i.vec_phi());
     this->addBranch(recoGenJetCollectionContainer_i.name() + "_mass", &recoGenJetCollectionContainer_i.vec_mass());
@@ -635,6 +643,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
 
   for (auto& l1tPFJetCollectionContainer_i : v_l1tPFJetCollectionContainer_) {
     this->addBranch(l1tPFJetCollectionContainer_i.name() + "_pt", &l1tPFJetCollectionContainer_i.vec_pt());
+    this->addBranch(l1tPFJetCollectionContainer_i.name() + "_pt2", &l1tPFJetCollectionContainer_i.vec_pt2());
     this->addBranch(l1tPFJetCollectionContainer_i.name() + "_eta", &l1tPFJetCollectionContainer_i.vec_eta());
     this->addBranch(l1tPFJetCollectionContainer_i.name() + "_phi", &l1tPFJetCollectionContainer_i.vec_phi());
     this->addBranch(l1tPFJetCollectionContainer_i.name() + "_mass", &l1tPFJetCollectionContainer_i.vec_mass());
@@ -645,6 +654,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
 
   for (auto& recoCaloJetCollectionContainer_i : v_recoCaloJetCollectionContainer_) {
     this->addBranch(recoCaloJetCollectionContainer_i.name() + "_pt", &recoCaloJetCollectionContainer_i.vec_pt());
+    this->addBranch(recoCaloJetCollectionContainer_i.name() + "_pt2", &recoCaloJetCollectionContainer_i.vec_pt2());
     this->addBranch(recoCaloJetCollectionContainer_i.name() + "_eta", &recoCaloJetCollectionContainer_i.vec_eta());
     this->addBranch(recoCaloJetCollectionContainer_i.name() + "_phi", &recoCaloJetCollectionContainer_i.vec_phi());
     this->addBranch(recoCaloJetCollectionContainer_i.name() + "_mass", &recoCaloJetCollectionContainer_i.vec_mass());
@@ -655,6 +665,8 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   for (auto& recoPFClusterJetCollectionContainer_i : v_recoPFClusterJetCollectionContainer_) {
     this->addBranch(recoPFClusterJetCollectionContainer_i.name() + "_pt",
                     &recoPFClusterJetCollectionContainer_i.vec_pt());
+    this->addBranch(recoPFClusterJetCollectionContainer_i.name() + "_pt2",
+                    &recoPFClusterJetCollectionContainer_i.vec_pt2());
     this->addBranch(recoPFClusterJetCollectionContainer_i.name() + "_eta",
                     &recoPFClusterJetCollectionContainer_i.vec_eta());
     this->addBranch(recoPFClusterJetCollectionContainer_i.name() + "_phi",
@@ -668,6 +680,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   for (auto& recoPFJetCollectionContainer_i : v_recoPFJetCollectionContainer_) {
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_energy", &recoPFJetCollectionContainer_i.vec_energy());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_pt", &recoPFJetCollectionContainer_i.vec_pt());
+    this->addBranch(recoPFJetCollectionContainer_i.name() + "_pt2", &recoPFJetCollectionContainer_i.vec_pt2());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_eta", &recoPFJetCollectionContainer_i.vec_eta());
     this->addBranch(recoPFJetCollectionContainer_i.name() + "_phi", &recoPFJetCollectionContainer_i.vec_phi());
     
@@ -729,6 +742,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
 
   for (auto& patJetCollectionContainer_i : v_patJetCollectionContainer_) {
     this->addBranch(patJetCollectionContainer_i.name() + "_pt", &patJetCollectionContainer_i.vec_pt());
+    this->addBranch(patJetCollectionContainer_i.name() + "_pt2", &patJetCollectionContainer_i.vec_pt2());
     this->addBranch(patJetCollectionContainer_i.name() + "_eta", &patJetCollectionContainer_i.vec_eta());
     this->addBranch(patJetCollectionContainer_i.name() + "_phi", &patJetCollectionContainer_i.vec_phi());
     this->addBranch(patJetCollectionContainer_i.name() + "_mass", &patJetCollectionContainer_i.vec_mass());
@@ -884,6 +898,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   for (auto& patMuonCollectionContainer_i : v_patMuonCollectionContainer_) {
     this->addBranch(patMuonCollectionContainer_i.name() + "_pdgId", &patMuonCollectionContainer_i.vec_pdgId());
     this->addBranch(patMuonCollectionContainer_i.name() + "_pt", &patMuonCollectionContainer_i.vec_pt());
+    this->addBranch(patMuonCollectionContainer_i.name() + "_pt2", &patMuonCollectionContainer_i.vec_pt2());
     this->addBranch(patMuonCollectionContainer_i.name() + "_eta", &patMuonCollectionContainer_i.vec_eta());
     this->addBranch(patMuonCollectionContainer_i.name() + "_phi", &patMuonCollectionContainer_i.vec_phi());
     this->addBranch(patMuonCollectionContainer_i.name() + "_mass", &patMuonCollectionContainer_i.vec_mass());
@@ -899,6 +914,7 @@ JMETriggerNTuple::JMETriggerNTuple(const edm::ParameterSet& iConfig)
   for (auto& patElectronCollectionContainer_i : v_patElectronCollectionContainer_) {
     this->addBranch(patElectronCollectionContainer_i.name() + "_pdgId", &patElectronCollectionContainer_i.vec_pdgId());
     this->addBranch(patElectronCollectionContainer_i.name() + "_pt", &patElectronCollectionContainer_i.vec_pt());
+    this->addBranch(patElectronCollectionContainer_i.name() + "_pt2", &patElectronCollectionContainer_i.vec_pt2());
     this->addBranch(patElectronCollectionContainer_i.name() + "_eta", &patElectronCollectionContainer_i.vec_eta());
     this->addBranch(patElectronCollectionContainer_i.name() + "_phi", &patElectronCollectionContainer_i.vec_phi());
     this->addBranch(patElectronCollectionContainer_i.name() + "_mass", &patElectronCollectionContainer_i.vec_mass());

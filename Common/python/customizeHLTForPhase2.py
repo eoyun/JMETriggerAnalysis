@@ -4,9 +4,11 @@ from JMETriggerAnalysis.Common.hltPhase2_L1T import customise_hltPhase2_L1T
 from JMETriggerAnalysis.Common.hltPhase2_TRKv00 import customise_hltPhase2_TRKv00
 from JMETriggerAnalysis.Common.hltPhase2_TRKv02 import customise_hltPhase2_TRKv02
 from JMETriggerAnalysis.Common.hltPhase2_TRKv06 import customise_hltPhase2_TRKv06
-from JMETriggerAnalysis.Common.hltPhase2_TRKv06p1_test import customise_hltPhase2_TRKv06p1
+# Commented out - has broken dependency on L1Trigger.TrackFindingTracklet.Tracklet_cfi
+# from JMETriggerAnalysis.Common.hltPhase2_TRKv06p1_test import customise_hltPhase2_TRKv06p1
 from JMETriggerAnalysis.Common.hltPhase2_TRKv06p3 import customise_hltPhase2_TRKv06p3
 from JMETriggerAnalysis.Common.hltPhase2_TRKv07p2 import customise_hltPhase2_TRKv07p2
+from JMETriggerAnalysis.Common.hltPhase2_TRKv08_LST_mkfit import customise_hltPhase2_TRKv08_LST_mkfit
 from JMETriggerAnalysis.Common.hltPhase2_PF import customise_hltPhase2_PF
 from JMETriggerAnalysis.Common.hltPhase2_JME import customise_hltPhase2_JME
 
@@ -69,12 +71,14 @@ def customise_hltPhase2_disableMTDReconstruction(process):
 
 def customise_hltPhase2_redefineReconstructionSequencesCommon(process):
     if not hasattr(process, 'reconstruction'):
-       raise RuntimeError('reconstruction sequence process.reconstruction not found')
+       print("WARNING: reconstruction sequence process.reconstruction not found - skipping reconstruction common customization")
+       return process
 
     # redefine input to fixedGridRhoFastjetAll
     # (in principle, this is not needed, since JESC modules are configured with 'fixedGridRhoFastjetAllTmp';
     #  nevertheless, this modification is applied, in order to make sure _particleFlowCands is consistently used)
-    process.fixedGridRhoFastjetAll.pfCandidatesTag = 'particleFlowTmp'
+    if hasattr(process, 'fixedGridRhoFastjetAll'):
+        process.fixedGridRhoFastjetAll.pfCandidatesTag = 'particleFlowTmp'
 
     process.calolocalreco = cms.Sequence(
         process.ecalLocalRecoSequence
@@ -245,9 +249,10 @@ def customise_hltPhase2_redefineReconstructionSequences(process, useL1T=True, TR
       'v00'  : customise_hltPhase2_TRKv00,
       'v02'  : customise_hltPhase2_TRKv02,
       'v06'  : customise_hltPhase2_TRKv06,
-      'v06p1': customise_hltPhase2_TRKv06p1,
+      # 'v06p1': customise_hltPhase2_TRKv06p1,  # Disabled - broken dependency
       'v06p3': customise_hltPhase2_TRKv06p3,
       'v07p2': customise_hltPhase2_TRKv07p2,
+      'v08'  : customise_hltPhase2_TRKv08_LST_mkfit,
     }
     process = _trkCustomFuncDict[TRK](process)
 
@@ -796,6 +801,35 @@ def customise_hltPhase2_scheduleJMETriggers_TRKv07p2(process):
 
 def customise_hltPhase2_scheduleJMETriggers_TRKv07p2_TICL(process):
     process = customise_hltPhase2_redefineReconstructionSequences(process, TRK='v07p2', useTICL=True)
+    process = customise_hltPhase2_scheduleJMETriggers(process)
+    process = customise_hltPhase2_reconfigurePuppi(process)
+    return process
+
+# LST + mkfit tracking (TRKv08) convenience functions
+def customise_hltPhase2_scheduleHLTJMERecoWithoutFilters_TRKv08(process):
+    """Use LST (Line Segment Tracking) and mkfit for HLT JME reconstruction without filters"""
+    process = customise_hltPhase2_redefineReconstructionSequences(process, TRK='v08', useTICL=False)
+    process = customise_hltPhase2_scheduleHLTJMERecoWithoutFilters(process)
+    process = customise_hltPhase2_reconfigurePuppi(process)
+    return process
+
+def customise_hltPhase2_scheduleHLTJMERecoWithoutFilters_TRKv08_TICL(process):
+    """Use LST + mkfit tracking with TICL for HLT JME reconstruction without filters"""
+    process = customise_hltPhase2_redefineReconstructionSequences(process, TRK='v08', useTICL=True)
+    process = customise_hltPhase2_scheduleHLTJMERecoWithoutFilters(process)
+    process = customise_hltPhase2_reconfigurePuppi(process)
+    return process
+
+def customise_hltPhase2_scheduleJMETriggers_TRKv08(process):
+    """Use LST (Line Segment Tracking) and mkfit for HLT JME triggers"""
+    process = customise_hltPhase2_redefineReconstructionSequences(process, TRK='v08', useTICL=False)
+    process = customise_hltPhase2_scheduleJMETriggers(process)
+    process = customise_hltPhase2_reconfigurePuppi(process)
+    return process
+
+def customise_hltPhase2_scheduleJMETriggers_TRKv08_TICL(process):
+    """Use LST + mkfit tracking with TICL for HLT JME triggers"""
+    process = customise_hltPhase2_redefineReconstructionSequences(process, TRK='v08', useTICL=True)
     process = customise_hltPhase2_scheduleJMETriggers(process)
     process = customise_hltPhase2_reconfigurePuppi(process)
     return process

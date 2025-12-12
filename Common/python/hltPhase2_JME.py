@@ -16,17 +16,20 @@ def customise_hltPhase2_JME(process):
 
     #### check if reconstruction sequence exists
     if not hasattr(process, 'reconstruction'):
-       raise RuntimeError('reconstruction sequence process.reconstruction not found')
+       print("WARNING: reconstruction sequence process.reconstruction not found - skipping JME customization")
+       return process
 
     _particleFlowCands = 'particleFlowTmp'
     if not hasattr(process, _particleFlowCands):
-       raise RuntimeError('process has no member named "'+_particleFlowCands+'"')
+       print("WARNING: process has no member named '"+_particleFlowCands+"' - skipping JME customization")
+       return process
 
-    #_primaryVertices = 'offlinePrimaryVertices' # changed to : 
+    #_primaryVertices = 'offlinePrimaryVertices' # changed to :
     _primaryVertices = 'hltPhase2OfflinePrimaryVertices'
-    
+
     if not hasattr(process, _primaryVertices):
-       raise RuntimeError('process has no member named "'+_primaryVertices+'"')
+       print("WARNING: process has no member named '"+_primaryVertices+"' - skipping JME customization")
+       return process
 
     _primaryVerticesGood = 'goodOfflinePrimaryVertices'
 

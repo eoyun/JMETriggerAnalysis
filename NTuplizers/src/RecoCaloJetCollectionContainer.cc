@@ -9,6 +9,7 @@ RecoCaloJetCollectionContainer::RecoCaloJetCollectionContainer(const std::string
 
 void RecoCaloJetCollectionContainer::clear() {
   pt_.clear();
+  pt2_.clear();
   eta_.clear();
   phi_.clear();
   mass_.clear();
@@ -18,6 +19,7 @@ void RecoCaloJetCollectionContainer::clear() {
 
 void RecoCaloJetCollectionContainer::reserve(const size_t vec_size) {
   pt_.reserve(vec_size);
+  pt2_.reserve(vec_size);
   eta_.reserve(vec_size);
   phi_.reserve(vec_size);
   mass_.reserve(vec_size);
@@ -27,6 +29,7 @@ void RecoCaloJetCollectionContainer::reserve(const size_t vec_size) {
 
 void RecoCaloJetCollectionContainer::emplace_back(const reco::CaloJet& obj) {
   pt_.emplace_back(obj.pt());
+  pt2_.emplace_back(obj.pt() * obj.pt());
   eta_.emplace_back(obj.eta());
   phi_.emplace_back(obj.phi());
   mass_.emplace_back(obj.mass());

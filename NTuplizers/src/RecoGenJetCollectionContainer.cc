@@ -9,6 +9,7 @@ RecoGenJetCollectionContainer::RecoGenJetCollectionContainer(const std::string& 
 
 void RecoGenJetCollectionContainer::clear() {
   pt_.clear();
+  pt2_.clear();
   eta_.clear();
   phi_.clear();
   mass_.clear();
@@ -34,6 +35,7 @@ void RecoGenJetCollectionContainer::clear() {
 
 void RecoGenJetCollectionContainer::reserve(const size_t vec_size) {
   pt_.reserve(vec_size);
+  pt2_.reserve(vec_size);
   eta_.reserve(vec_size);
   phi_.reserve(vec_size);
   mass_.reserve(vec_size);
@@ -75,6 +77,7 @@ void RecoGenJetCollectionContainer::emplace_back(const reco::GenJet& obj) {
 
   if (isBJet){
     pt_.emplace_back(obj.pt());
+  pt2_.emplace_back(obj.pt() * obj.pt());
     eta_.emplace_back(obj.eta());
     phi_.emplace_back(obj.phi());
     mass_.emplace_back(obj.mass());
