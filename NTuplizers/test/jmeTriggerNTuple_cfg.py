@@ -107,6 +107,7 @@ opts.parseArguments()
 ###
 
 
+
 if opts.reco == 'default':  
   from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process
 
@@ -645,6 +646,7 @@ process.JMETriggerNTuple = cms.EDAnalyzer('JMETriggerNTuple',
   ),
 )
 
+process.JMETriggerNTuple.HepMCProduct = cms.InputTag("generatorSmeared", "", "SIM")
 process.analysisNTupleEndPath = cms.EndPath(process.JMETriggerNTuple)
 process.schedule_().extend([process.analysisNTupleEndPath])
 
