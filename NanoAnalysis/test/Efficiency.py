@@ -26,6 +26,7 @@ def declare_struc():
 
 def analysis(filename_idx,idx,outputdir):
     declare_struc()
+def analysis(filename_idx,idx,outputdir):
     # [1] Remote input path (XRootD)
     inputfile = "root://xrootd-cms.infn.it/"+filename_idx
     print(inputfile)
