@@ -7,6 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--dataset", dest="dataset", action="store") 
 parser.add_argument("-o", "--outputdir", dest="outputdir", action="store") 
 parser.add_argument("-p", "--pythonscript", dest="pythonscr", action="store") 
+parser.add_argument("-e","--era",dest="era",action="store")
 args = parser.parse_args()
 
 def Make_CondorScr(outname) :
@@ -34,7 +35,7 @@ def Make_CondorScr(outname) :
     os.system(subchMod)
     return 0
 
-def Make_Scr(outname, script) :
+def Make_Scr(outname, script,era) :
     os.system("mkdir -p Scr/"+outname)
     scr_filename = "Scr/"+outname+"/test.sh"
     f = open(scr_filename,"w")
@@ -48,7 +49,7 @@ def Make_Scr(outname, script) :
     pwd = os.getcwd()
     f.write('cd '+ pwd +'\n') 
     f.write('mkdir -p /eos/home-y/yeo/rdf/output/'+outname+'\n') 
-    f.write('python3 '+script+' -f ./input/'+outname+' -i $1 -o /eos/home-y/yeo/rdf/output/'+outname)
+    f.write('python3 '+script+' -f ./input/'+outname+' -i $1 -o /eos/home-y/yeo/rdf/output/'+outname +" -e "+era)
     f.close()
     os.system("cp "+script+" Scr/"+outname+"/")
 
@@ -65,12 +66,13 @@ if __name__ == '__main__':
     outname = args.outputdir
     dataset = args.dataset
     script = args.pythonscr
+    era = args.era
     if (os.path.isfile('./input/'+outname+'.out')) :
     
         print('plz check output name')
     else :
         Make_input(dataset,outname)
-        Make_Scr(outname,script)
+        Make_Scr(outname,script,era)
         Make_CondorScr(outname)
 
     #Make_input("/JetMET0/Run2024C-PromptReco-v1/NANOAOD",outname)

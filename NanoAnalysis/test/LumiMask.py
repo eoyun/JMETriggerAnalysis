@@ -5,9 +5,11 @@ import numpy
 import callable_array
 
 class lumimask:
-    def __init__(self):
-        jsonfile = "/eos/user/c/cmsdqm/www/CAF/certification/Collisions24/Cert_Collisions2024_378981_386951_Golden.json"
-        #jsonfile = "/eos/user/c/cmsdqm/www/CAF/certification/Collisions25/Cert_Collisions2025_391658_398860_Golden.json"
+    def __init__(self, era = 2024):
+        if era == 2024 :
+            jsonfile = "/eos/user/c/cmsdqm/www/CAF/certification/Collisions24/Cert_Collisions2024_378981_386951_Golden.json"
+        if era == 2025 :
+            jsonfile = "/eos/user/c/cmsdqm/www/CAF/certification/Collisions25/Cert_Collisions2025_391658_398860_Golden.json"
         #jsonfile = "/eos/user/c/cmsdqm/www/CAF/certification/Collisions24/2024C_Golden.json"
 
         with fsspec.open(jsonfile) as fin:
