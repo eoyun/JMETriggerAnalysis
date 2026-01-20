@@ -13,6 +13,19 @@ args = parser.parse_args()
 
 ROOT.ROOT.EnableImplicitMT()
 
+def declare_struc():
+    if not hasattr(ROOT, 'RDFAddArray'):
+        ROOT.gInterpreter.Declare('''
+        ROOT::RDF::RNode RDFAddArray(ROOT::RDF::RNode df, ROOT::RVec<double> &v, const std::string &name) 
+        {
+            return df.Define(name, [&](unsigned c) { return v[c]; }, {"counter"});
+        }
+        unsigned counter = 0;
+
+        ''')
+
+def analysis(filename_idx,idx,outputdir):
+    declare_struc()
 def analysis(filename_idx,idx,outputdir):
     # [1] Remote input path (XRootD)
     inputfile = "root://xrootd-cms.infn.it/"+filename_idx
@@ -110,7 +123,14 @@ def analysis(filename_idx,idx,outputdir):
     df = df.Define("hlt_Jet_matched_phi","get_or_default(hlt_Jet_phi, Jet_hlt_matched_index[0], -99.0)")
     # [7] Apply certified lumisections
     lumi_mask = LumiMask.lumimask(int(args.era))
-    df = df.Filter(lambda run, lumi: lumi_mask.accept(run, lumi), ["run", "luminosityBlock"])
+    lumi_values = lumi_mask(
+        df.Take[ROOT.UInt_t]("run").GetValue(),
+        df.Take[ROOT.UInt_t]("luminosityBlock").GetValue()
+    )
+    df = df.Define("counter","counter++")
+    lumi_arr = ROOT.VecOps.AsRVec(lumi_values)
+    df = ROOT.RDFAddArray(ROOT.RDF.AsRNode(df), lumi_arr, "LumiMask")
+    df = df.Filter("LumiMask > 0.5","")
     df = df.Define("tnp","random_idx()")
     # [8] Tag-and-probe dijet definitions
     df = df.Define("pT_ave","(Lead_jet + Sub_jet)/2")
