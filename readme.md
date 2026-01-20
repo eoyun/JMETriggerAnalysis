@@ -160,6 +160,27 @@ This will:
 - Use `-e 2024` or `-e 2025` to select the luminosity JSON era.
 - Jobs write outputs to `/eos/home-y/yeo/rdf/output/<outputdir>`.
 
+**Run a single script (no Condor)**
+1. Create or reuse an input list (one file per line):
+```
+cd ${CMSSW_BASE}/src/JMETriggerAnalysis/NanoAnalysis/test
+dasgoclient -query="file dataset=/JetMET0/Run2024C-PromptReco-v1/NANOAOD system=rucio" > input/2024C_JETMET0_example.out
+```
+2. Run a single file by index (e.g., the first file in the list):
+```
+python3 Efficiency.py \
+  -f 2024C_JETMET0_example \
+  -i 0 \
+  -o ./local_output \
+  -e 2024
+```
+3. To process multiple files locally, loop over indices in the list:
+```
+for i in $(seq 0 9); do
+  python3 Efficiency.py -f 2024C_JETMET0_example -i ${i} -o ./local_output -e 2024
+done
+```
+
 
 
 ----------
@@ -204,4 +225,3 @@ We store the menus in `Common/python/configs` directory and use shell scripts to
 ./dumpHLTMenus_mcRun3.sh
 ```
 and get the menu produced.
-
