@@ -1,2 +1,0 @@
-jsonparser failure of DAS record={"das":{"expire":1765865623,"instance":"prod/global","primary_key":"file.name","record":1,"services":["rucio:file4dataset"]},"file":[{"das":{"expire":1765866223,"instance":"prod/global","primary_key":"file.name","record":0,"services":["das:NA"],"status":"ok","ts":1765865623},"qhash":"6f4916dfafe01ea346ccddafac87c162","query":"file dataset=/JetMET0/Run2024I-MINIv6NANOv15-v2/NANOAOD system=rucio"}],"qhash":"6f4916dfafe01ea346ccddafac87c162"}
-, select sub keys=[file [0] name], error=Key path not found

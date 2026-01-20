@@ -14,7 +14,10 @@ exe.sh
 *out.*
 *completed
 *.sub
+*.submit
 *.log
+*.out
+*.err
 configDump.py
 *USER_PROXY*
 dataset.json
