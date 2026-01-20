@@ -39,3 +39,12 @@ class lumimask:
 
         #return mask_out
         return mask_out
+
+    def accept(self, run, lumi):
+        run = numpy.uint32(run)
+        if run not in self.masks_:
+            return False
+        lumi = numpy.uint32(lumi)
+        lumi_ = self.masks_[run]
+        ind = numpy.searchsorted(lumi_, lumi)
+        return numpy.mod(ind, 2) == 1

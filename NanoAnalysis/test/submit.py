@@ -10,7 +10,7 @@ parser.add_argument("-p", "--pythonscript", dest="pythonscr", action="store")
 parser.add_argument("-e","--era",dest="era",action="store")
 args = parser.parse_args()
 
-def Make_CondorScr(outname) :
+def Make_CondorScr(outname, script_name) :
     os.system("mkdir -p Scr/"+outname+"/log")
     condor_filename = "Scr/"+outname+"/condor.submit"
     lines =0
@@ -19,7 +19,7 @@ def Make_CondorScr(outname) :
     f = open(condor_filename,"w")
     f.write('# Unix submit description file\n')
     f.write('Universe = vanilla\n')
-    f.write('transfer_input_files = /afs/cern.ch/user/y/yeo/tmp/x509up\n') 
+    f.write('transfer_input_files = /afs/cern.ch/user/y/yeo/tmp/x509up, ./input/'+outname+'.out, ./Scr/'+outname+'/'+script_name+', ./Scr/'+outname+'/LumiMask.py, ./Scr/'+outname+'/callable_array.py\n')
     f.write('Executable = ./Scr/'+outname+'/test.sh\n')
     f.write('request_memory = 1000\n') 
     f.write('should_transfer_files   = Yes\n')
@@ -44,14 +44,16 @@ def Make_Scr(outname, script,era) :
     f.write('source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh\n')
     f.write('export X509_USER_PROXY=/afs/cern.ch/user/y/yeo/tmp/x509up\n')
     f.write('voms-proxy-info -all\n')
-    f.write('voms-proxy-info -all --file $1\n')
+    f.write('voms-proxy-info -all --file $X509_USER_PROXY\n')
     #f.write('cd /afs/cern.ch/user/y/yeo/rdf/24.09.25\n') 
-    pwd = os.getcwd()
-    f.write('cd '+ pwd +'\n') 
+    f.write('cd $_CONDOR_SCRATCH_DIR\n')
     f.write('mkdir -p /eos/home-y/yeo/rdf/output/'+outname+'\n') 
-    f.write('python3 '+script+' -f ./input/'+outname+' -i $1 -o /eos/home-y/yeo/rdf/output/'+outname +" -e "+era)
+    script_name = os.path.basename(script)
+    f.write('python3 ./'+script_name+' -f '+outname+' -i $1 -o /eos/home-y/yeo/rdf/output/'+outname +" -e "+era)
     f.close()
     os.system("cp "+script+" Scr/"+outname+"/")
+    os.system("cp LumiMask.py Scr/"+outname+"/")
+    os.system("cp callable_array.py Scr/"+outname+"/")
 
 
     return 0
@@ -73,7 +75,7 @@ if __name__ == '__main__':
     else :
         Make_input(dataset,outname)
         Make_Scr(outname,script,era)
-        Make_CondorScr(outname)
+        Make_CondorScr(outname, os.path.basename(script))
 
     #Make_input("/JetMET0/Run2024C-PromptReco-v1/NANOAOD",outname)
     #Make_Scr(outname)

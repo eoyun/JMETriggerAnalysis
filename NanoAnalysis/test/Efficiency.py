@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--filename", dest="filename", action="store") 
 parser.add_argument("-i", "--index", dest="index", action="store") 
 parser.add_argument("-o", "--outputdir", dest="outputdir", action="store") 
+parser.add_argument("-e", "--era", dest="era", action="store", default="2024")
 args = parser.parse_args()
 
 ROOT.ROOT.EnableImplicitMT()
@@ -59,14 +60,9 @@ def analysis(filename_idx,idx,outputdir):
     ROOT.gInterpreter.Declare(
             """
             vector<int> random_idx(){
-                //std::cout<<std::rand()%2<<std::endl;
-
                 vector<int> tnp;
-                int tmp = std::rand()%2;
-
-                tnp.push_back(tmp);
-                tnp.push_back((tmp+1)%2);
-                //std::cout<<tmp<< " | "<<(tmp+1)%2<<std::endl;
+                tnp.push_back(0);
+                tnp.push_back(1);
                 return tnp;
             }
             """
@@ -90,24 +86,42 @@ def analysis(filename_idx,idx,outputdir):
                     hlt_matched.push_back(-1);
                     return hlt_matched;
                 }
-                //for (int i=0; i< hlt_eta.size();i++){
                 for (int i=0; i< off_eta.size();i++){
                     off_index = -1;
-                    //std::cout<<off_phi.size()<<" | "<<off_eta.size()<<" | "<<i<<" | "<<hlt_phi.size()<<" | "<<hlt_eta.size()<<std::endl;
+                    float best_dr2 = dr * dr;
                     for (int j=0;j<hlt_eta.size();j++){
-                        if (sqrt(pow(hlt_eta[j]-off_eta[i],2)+pow(hlt_phi[j]-off_phi[i],2))<dr){
+                        float dphi = abs(hlt_phi[j]-off_phi[i]);
+                        if (dphi > M_PI) {
+                            dphi = 2 * M_PI - dphi;
+                        }
+                        float dr2 = pow(hlt_eta[j]-off_eta[i],2) + pow(dphi,2);
+                        if (dr2 < best_dr2){
+                            best_dr2 = dr2;
                             off_index = j;
-                            break;
                         }
                     }
-                    //std::cout<<off_index<<std::endl;
                     hlt_matched.push_back(off_index);
                 }
-                //std::cout<<hlt_matched.size()<<" | "<<off_eta.size()<<" | "<<hlt_eta.size()<<std::endl;
                 return hlt_matched;
             }
             """
 
+            )
+    ROOT.gInterpreter.Declare(
+            """
+            float get_or_default(ROOT::VecOps::RVec<float> values, int index, float fallback) {
+                if (index < 0 || index >= static_cast<int>(values.size())) {
+                    return fallback;
+                }
+                return values[index];
+            }
+            int get_or_default_int(ROOT::VecOps::RVec<int> values, int index, int fallback) {
+                if (index < 0 || index >= static_cast<int>(values.size())) {
+                    return fallback;
+                }
+                return values[index];
+            }
+            """
             )
     #df_delta_phi = df.Define("Delta_phi","double x = Jet_phi[0]- Jet_phi[1]; return x > TMath::pi ? 2 * TMath::pi - x : x")
     df = df.Define("Delta_phi","dphi(Jet_phi[0],Jet_phi[1])")
@@ -134,20 +148,14 @@ def analysis(filename_idx,idx,outputdir):
     #df.Display("hlt_Jet_id").Print()
     #print(df.Take['ROOT::VecOps::RVec<int>']("hlt_Jet_id").GetValue())
     df = df.Define("Jet_hlt_matched_index","match_hlt_offline(hlt_Jet_eta,hlt_Jet_phi,Jet_eta,Jet_phi)")
-    df = df.Define("hlt_Jet_off_matched_pt","Trig_obj_pt[Jet_hlt_matched_index[0]]")
-    df = df.Define("hlt_Jet_matched_id","hlt_Jet_id[Jet_hlt_matched_index[0]]")
-    df = df.Define("hlt_Jet_matched_eta","hlt_Jet_eta[Jet_hlt_matched_index[0]]")
-    df = df.Define("hlt_Jet_matched_phi","hlt_Jet_phi[Jet_hlt_matched_index[0]]")
+    df = df.Define("hlt_Jet_off_matched_pt","get_or_default(Trig_obj_pt, Jet_hlt_matched_index[0], -1.0)")
+    df = df.Define("hlt_Jet_matched_id","get_or_default_int(hlt_Jet_id, Jet_hlt_matched_index[0], -1)")
+    df = df.Define("hlt_Jet_matched_eta","get_or_default(hlt_Jet_eta, Jet_hlt_matched_index[0], -99.0)")
+    df = df.Define("hlt_Jet_matched_phi","get_or_default(hlt_Jet_phi, Jet_hlt_matched_index[0], -99.0)")
     #print(df.Take['vector<int>']("Jet_hlt_matched_index").GetValue())
     #df_delta_phi = df.Define("Delta_phi","dphi(Jet_phi)")
-    LumiMask_ = LumiMask.lumimask()(df.Take[ROOT.UInt_t]("run").GetValue(),df.Take[ROOT.UInt_t]("luminosityBlock").GetValue())
-    #print(LumiMask_)
-    df = df.Define("counter","counter++")
-    Lumi_arr = ROOT.VecOps.AsRVec(LumiMask_)
-    #print(Lumi_arr)
-    df = ROOT.RDFAddArray(ROOT.RDF.AsRNode(df),Lumi_arr,"LumiMask")
-    #print(df.AsNumpy(columns=["LumiMask"]))
-    df = df.Filter("LumiMask > 0.5","")
+    lumi_mask = LumiMask.lumimask(int(args.era))
+    df = df.Filter(lambda run, lumi: lumi_mask.accept(run, lumi), ["run", "luminosityBlock"])
     df = df.Define("tnp","random_idx()")
     #print(df.Take['vector<int>']("tnp").GetValue())
     #for i in range(len(tag_array)) :
@@ -307,6 +315,5 @@ if __name__ == "__main__":
         filelist.append(line)
     #print(filelist[index])
     analysis(filelist[index],index,outputdir)
-
 
 
