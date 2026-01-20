@@ -132,6 +132,34 @@ The directory for Analysis of the output NTuples is the `NTupleAnalysis`. You ca
 
 A description of the basic tools and how to use them can be found [here](https://github.com/theochatzis/JMETriggerAnalysis/tree/run3_13_0_X/NTupleAnalysis/test#readme).
 
+----------
+
+### NanoAnalysis (RDataFrame + Condor)
+The `NanoAnalysis/test` directory contains RDataFrame-based analysis scripts and a simple Condor submission helper.
+
+**Prepare and submit Condor jobs**
+1. Move to the NanoAnalysis test directory:
+```
+cd ${CMSSW_BASE}/src/JMETriggerAnalysis/NanoAnalysis/test
+```
+2. Submit jobs with `submit.py`:
+```
+python3 submit.py \
+  -d /JetMET0/Run2024C-PromptReco-v1/NANOAOD \
+  -o 2024C_JETMET0_example \
+  -p Efficiency.py \
+  -e 2024
+```
+This will:
+- Query DAS and store the file list in `input/2024C_JETMET0_example.out`.
+- Create `Scr/2024C_JETMET0_example/test.sh` and a Condor submit file.
+- Submit one job per file in the list.
+
+**Notes**
+- The analysis scripts expect `-f` to be the input list **basename** (e.g., `2024C_JETMET0_example`), and they append `.out` internally.
+- Use `-e 2024` or `-e 2025` to select the luminosity JSON era.
+- Jobs write outputs to `/eos/home-y/yeo/rdf/output/<outputdir>`.
+
 
 
 ----------
@@ -176,5 +204,4 @@ We store the menus in `Common/python/configs` directory and use shell scripts to
 ./dumpHLTMenus_mcRun3.sh
 ```
 and get the menu produced.
-
 
