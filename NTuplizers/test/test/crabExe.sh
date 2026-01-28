@@ -55,7 +55,7 @@ while [ $skip -lt $total_events ]; do
     )
 
     (
-        cmsRun jmeTriggerNTuple_cfg.py track=menu inputFiles=file:L1_output.root output=HLT_chunk_${chunk_index}.root
+        cmsRun jmeTriggerNTuple_cfg.py inputFiles=file:L1_output.root output=HLT_chunk_${chunk_index}.root
     )
 
     rm -f L1_output.root  # free disk space quickly

@@ -26390,7 +26390,7 @@ process.hltGeneralTracks = cms.EDProducer("TrackListMerger",
     copyExtras = cms.untracked.bool(True),
     copyMVA = cms.bool(False),
     hasSelector = cms.vint32(0, 0),
-    indivShareFrac = cms.vdouble(1.0, 1.0),
+    indivShareFrac = cms.vdouble(0.1, 0.1),
     makeReKeyedSeeds = cms.untracked.bool(False),
     newQuality = cms.string('confirmed'),
     selectedTrackQuals = cms.VInputTag(cms.InputTag("hltInitialStepTrackSelectionHighPurity"), cms.InputTag("hltHighPtTripletStepTrackSelectionHighPurity")),
@@ -27415,7 +27415,7 @@ process.hltHighPtTripletStepClusters = cms.EDProducer("TrackClusterRemoverPhase2
     phase2OTClusters = cms.InputTag("hltSiPhase2Clusters"),
     phase2pixelClusters = cms.InputTag("hltSiPixelClusters"),
     trackClassifier = cms.InputTag("","QualityMasks"),
-    trajectories = cms.InputTag("hltInitialStepTrackSelectionHighPurity")
+    trajectories = cms.InputTag("hltInitialStepSeedTracksLST")
 )
 
 
@@ -28812,7 +28812,7 @@ process.hltInitialStepSeeds = cms.EDProducer("SeedGeneratorFromProtoTracksEDProd
         refToPSet_ = cms.string('seedFromProtoTracks')
     ),
     TTRHBuilder = cms.string('WithTrackAngle'),
-    includeFourthHit = cms.bool(False),
+    includeFourthHit = cms.bool(True),
     originHalfLength = cms.double(0.3),
     originRadius = cms.double(0.1),
     removeOTRechits = cms.bool(False),
@@ -28822,28 +28822,24 @@ process.hltInitialStepSeeds = cms.EDProducer("SeedGeneratorFromProtoTracksEDProd
 )
 
 
-process.hltInitialStepTrackCandidates = cms.EDProducer("CkfTrackCandidateMaker",
-    MeasurementTrackerEvent = cms.InputTag("hltMeasurementTrackerEvent"),
-    NavigationSchool = cms.string('SimpleNavigationSchool'),
-    RedundantSeedCleaner = cms.string('CachingSeedCleanerBySharedInput'),
-    TrajectoryBuilderPSet = cms.PSet(
-        refToPSet_ = cms.string('initialStepTrajectoryBuilder')
+process.hltInitialStepTrackCandidates = cms.EDProducer("LSTOutputConverter",
+    SeedCreatorPSet = cms.PSet(
+        ComponentName = cms.string('SeedFromConsecutiveHitsCreator'),
+        MinOneOverPtError = cms.double(1),
+        OriginTransverseErrorMultiplier = cms.double(1),
+        SeedMomentumForBOFF = cms.double(5),
+        TTRHBuilder = cms.string('WithTrackAngle'),
+        forceKinematicWithRegionDirection = cms.bool(False),
+        magneticField = cms.string(''),
+        propagator = cms.string('PropagatorWithMaterial')
     ),
-    TrajectoryCleaner = cms.string('TrajectoryCleanerBySharedHits'),
-    TransientInitialStateEstimatorParameters = cms.PSet(
-        numberMeasurementsForFit = cms.int32(4),
-        propagatorAlongTISE = cms.string('PropagatorWithMaterialParabolicMf'),
-        propagatorOppositeTISE = cms.string('PropagatorWithMaterialParabolicMfOpposite')
-    ),
-    cleanTrajectoryAfterInOut = cms.bool(True),
-    doSeedingRegionRebuilding = cms.bool(True),
-    maxNSeeds = cms.uint32(100000),
-    maxSeedsBeforeCleaning = cms.uint32(1000),
-    numHitsForSeedCleaner = cms.int32(50),
-    onlyPixelHitsForSeedCleaner = cms.bool(True),
-    reverseTrajectories = cms.bool(False),
-    src = cms.InputTag("hltInitialStepSeeds"),
-    useHitsSplitting = cms.bool(False)
+    includeNonpLSTSs = cms.bool(False),
+    includeT5s = cms.bool(True),
+    lstInput = cms.InputTag("hltInputLST"),
+    lstOutput = cms.InputTag("hltLST"),
+    lstPixelSeeds = cms.InputTag("hltInputLST"),
+    propagatorAlong = cms.ESInputTag("","PropagatorWithMaterial"),
+    propagatorOpposite = cms.ESInputTag("","PropagatorWithMaterialOpposite")
 )
 
 
@@ -28911,7 +28907,7 @@ process.hltInitialStepTrackCutClassifier = cms.EDProducer("TrackCutClassifier",
         minNdof = cms.vdouble(1e-05, 1e-05, 1e-05),
         minPixelHits = cms.vint32(0, 0, 3),
         passThroughForAll = cms.bool(False),
-        passThroughForDisplaced = cms.bool(False)
+        passThroughForDisplaced = cms.bool(True)
     ),
     qualityCuts = cms.vdouble(-0.7, 0.1, 0.7),
     src = cms.InputTag("hltInitialStepTracks"),
@@ -83305,6 +83301,14 @@ process.hltESPL3MuKFTrajectoryFitter = cms.ESProducer("KFTrajectoryFitterESProdu
 )
 
 
+process.hltESPModulesDevLST = cms.ESProducer("LSTModulesDevESProducer@alpaka",
+    alpaka = cms.untracked.PSet(
+        backend = cms.untracked.string('')
+    ),
+    appendToDataLabel = cms.string('')
+)
+
+
 process.hltESPMuonTransientTrackingRecHitBuilder = cms.ESProducer("MuonTransientTrackingRecHitBuilderESProducer",
     ComponentName = cms.string('hltESPMuonTransientTrackingRecHitBuilder')
 )
@@ -83408,6 +83412,16 @@ process.hltESPTTRHBuilderWithTrackAngle = cms.ESProducer("TkTransientTrackingRec
     Phase2StripCPE = cms.string('Phase2StripCPE'),
     PixelCPE = cms.string('PixelCPEGeneric'),
     StripCPE = cms.string('FakeStripCPE')
+)
+
+
+process.hltESPTTRHBuilderWithoutRefit = cms.ESProducer("TkTransientTrackingRecHitBuilderESProducer",
+    ComponentName = cms.string('hltESPTTRHBuilderWithoutRefit'),
+    ComputeCoarseLocalPositionFromDisk = cms.bool(False),
+    Matcher = cms.string('Fake'),
+    Phase2StripCPE = cms.string(''),
+    PixelCPE = cms.string('Fake'),
+    StripCPE = cms.string('Fake')
 )
 
 
@@ -84894,13 +84908,13 @@ process.HLTHgcalTiclPFClusteringForEgamma_barrel = cms.Sequence(process.hltHgcal
 process.HLTHighPtTripletStepSeedingSequence = cms.Sequence(process.hltHighPtTripletStepClusters+process.hltHighPtTripletStepSeedLayers+process.hltHighPtTripletStepHitDoublets+process.hltHighPtTripletStepHitTriplets+process.hltHighPtTripletStepSeeds)
 
 
-process.HLTHighPtTripletStepSequence = cms.Sequence(process.HLTHighPtTripletStepSeedingSequence+process.hltHighPtTripletStepTrackCandidates+process.hltHighPtTripletStepTracks+process.hltHighPtTripletStepTrackCutClassifier+process.hltHighPtTripletStepTrackSelectionHighPurity)
+process.HLTHighPtTripletStepSequence = cms.Sequence(process.hltHighPtTripletStepTrackCandidates+process.hltHighPtTripletStepTracks+process.hltHighPtTripletStepTrackCutClassifier+process.hltHighPtTripletStepTrackSelectionHighPurity)
 
 
 process.HLTInitialStepPVSequence = cms.Sequence(process.hltFirstStepPrimaryVerticesUnsorted+process.hltPhase2TowerMakerForAll+process.hltAk4CaloJetsForTrk)
 
 
-process.HLTInitialStepSequence = cms.Sequence(process.hltInitialStepSeeds+process.hltInitialStepTrackCandidates+process.hltInitialStepTracks+process.hltInitialStepTrackCutClassifier+process.hltInitialStepTrackSelectionHighPurity)
+process.HLTInitialStepSequence = cms.Sequence(process.hltInitialStepSeeds+process.hltInitialStepSeedTracksLST+process.HLTHighPtTripletStepSeedingSequence+process.hltHighPtTripletStepSeedTracksLST+process.hltSiPhase2RecHits+process.hltInputLST+process.hltLST+process.hltInitialStepTrackCandidates+process.hltInitialStepTracks+process.hltInitialStepTrackCutClassifier+process.hltInitialStepTrackSelectionHighPurity)
 
 
 process.HLTItLocalRecoSequence = cms.Sequence(process.HLTDoLocalPixelSequence+process.HLTDoLocalStripSequence)

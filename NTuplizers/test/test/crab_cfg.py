@@ -7,14 +7,13 @@ config = config()
 name='test_crab_filebased'
 outputDirName='HLT_Phase2Productions'
 recoOption = 'default'
-trackOption = 'menu'
 dataset='/TT_TuneCP5_14TeV-powheg-pythia8/Phase2Spring24DIGIRECOMiniAOD-PU200_AllTP_140X_mcRun4_realistic_v4-v1/GEN-SIM-DIGI-RAW-MINIAOD'
 # =========================
 
 input_file_dir = os.environ['CMSSW_BASE']+'/src/JMETriggerAnalysis/NTuplizers/test/'
 
 config.section_('General')
-config.General.requestName = f'Phase2Production_{name}_{recoOption}_{trackOption}'
+config.General.requestName = f'Phase2Production_{name}_{recoOption}'
 config.General.workArea = name
 config.General.transferOutputs = True
 config.General.transferLogs = True
@@ -35,7 +34,7 @@ config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 1
 config.Data.totalUnits = 1
 
-config.Data.outLFNDirBase = f'/store/user/{os.environ["USER"]}/{outputDirName}/{name}/{trackOption}/'
+config.Data.outLFNDirBase = f'/store/user/{os.environ["USER"]}/{outputDirName}/{name}/{recoOption}/'
 
 config.section_('Site')
 config.Site.storageSite = 'T3_CH_CERNBOX'

@@ -1,0 +1,29 @@
+universe   = vanilla
+executable = condor_job.sh
+
+# STEP=5 고정, START=885
+START_SKIP = 0
+STEP       = 5
+DATE_TAG   = 260114
+
+# $(Process) = 0,1,2,... 이므로 SKIP = START_SKIP + STEP*Process
+arguments = $(Process) $(START_SKIP) $(STEP) $(DATE_TAG)
+
+should_transfer_files     = YES
+when_to_transfer_output   = ON_EXIT
+transfer_input_files      = condor_job.sh, jmeTriggerNTuple_L1Only_cfg.py, jmeTriggerNTuple_cfg.py, Phase2Spring24_MC_default.db 
+transfer_output_files     =
+
+use_x509userproxy         = True
+x509userproxy             = $ENV(X509_USER_PROXY)
+
+output = logs/out_$(Cluster)_$(Process).txt
+error  = logs/err_$(Cluster)_$(Process).txt
+log    = logs/log_$(Cluster).txt
+
+request_cpus   = 1
+request_memory = 3000
+
+# TOTAL_EVENTS=10000이면: (10000-885)/5 = 1823
+queue 2
+

@@ -1,0 +1,118 @@
+#!/bin/bash
+set -euo pipefail
+
+PROCESS="${1:?PROCESS missing}"
+START_SKIP="${2:?START_SKIP missing}"
+STEP="${3:?STEP missing}"
+DATE_TAG="${4:?DATE_TAG missing}"
+
+# numeric guard
+[[ "${PROCESS}" =~ ^[0-9]+$ ]] || { echo "PROCESS not numeric: ${PROCESS}"; exit 2; }
+[[ "${START_SKIP}" =~ ^[0-9]+$ ]] || { echo "START_SKIP not numeric: ${START_SKIP}"; exit 2; }
+[[ "${STEP}" =~ ^[0-9]+$ ]] || { echo "STEP not numeric: ${STEP}"; exit 2; }
+
+SKIP=$(( START_SKIP + STEP * PROCESS ))
+IDX=$(printf "%05d" "${SKIP}")
+
+echo "=== Processing events ${SKIP} -> $((SKIP+STEP-1)) (Process=${PROCESS}) ==="
+
+export X509_USER_PROXY=/afs/cern.ch/user/y/yeo/tmp/x509up
+
+# --- Always run in Condor scratch to avoid filling submit/working directory ---
+WORKDIR="${_CONDOR_SCRATCH_DIR:-$(pwd)}"
+cd "${WORKDIR}"
+echo "WORKDIR=${WORKDIR}"
+ls -lah
+
+# --- X509 proxy sanity (permission errors usually mean missing/invalid proxy) ---
+echo "X509_USER_PROXY=${X509_USER_PROXY:-<unset>}"
+if [[ -z "${X509_USER_PROXY:-}" || ! -r "${X509_USER_PROXY}" ]]; then
+  echo "[ERROR] X509 proxy is missing or not readable inside the job."
+  echo "       This commonly causes EOS 'public access level restriction' (3010)."
+  exit 88
+fi
+
+# If voms-proxy-info exists, print summary (non-fatal if missing)
+if command -v voms-proxy-info >/dev/null 2>&1; then
+  echo "=== voms-proxy-info (summary) ==="
+  voms-proxy-info -timeleft || true
+  voms-proxy-info -identity || true
+fi
+
+# EOS / XRootD
+EOS_BASE="/eos/home-y/yeo/Phase2"
+EOS_XROOTD="root://eosuser.cern.ch"
+EOS_DIR="${EOS_BASE}/${DATE_TAG}"
+EOS_DIR_XRD="${EOS_XROOTD}//${EOS_DIR}"
+
+echo "EOS_DIR=${EOS_DIR}"
+echo "EOS_DIR_XRD=${EOS_DIR_XRD}"
+
+# CMSSW setup (assumes release exists on shared filesystem)
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+cmssw-el8
+export SCRAM_ARCH=el8_amd64_gcc13
+
+cd /afs/cern.ch/user/y/yeo/phase2/CMSSW_16_0_0_pre3/src
+eval "$(scramv1 runtime -sh)"
+
+# --- Force use of CMSSW-provided XRootD client (avoids host libreadline mismatches) ---
+# scram tool info xrootd prints XROOTD_BASE=<path>
+XROOTD_BASE="$(scram tool info xrootd 2>/dev/null | awk -F= '/^XROOTD_BASE=/{print $2}' | tail -n 1)"
+if [[ -n "${XROOTD_BASE}" && -d "${XROOTD_BASE}/bin" ]]; then
+  export PATH="${XROOTD_BASE}/bin:${PATH}"
+  if [[ -d "${XROOTD_BASE}/lib64" ]]; then
+    export LD_LIBRARY_PATH="${XROOTD_BASE}/lib64:${LD_LIBRARY_PATH:-}"
+  fi
+  if [[ -d "${XROOTD_BASE}/lib" ]]; then
+    export LD_LIBRARY_PATH="${XROOTD_BASE}/lib:${LD_LIBRARY_PATH:-}"
+  fi
+fi
+echo "which xrdfs: $(command -v xrdfs || echo '<not found>')"
+echo "which xrdcp: $(command -v xrdcp || echo '<not found>')"
+
+# Back to scratch for actual running/output
+cd "${WORKDIR}"
+
+echo "=== Running cmsRun in scratch ==="
+cmsRun jmeTriggerNTuple_L1Only_cfg.py \
+  maxEvents="${STEP}" \
+  skipEvents="${SKIP}" \
+  output="L1_output_${IDX}.root"
+
+cmsRun jmeTriggerNTuple_cfg.py track=LST    inputFiles="file:L1_output_${IDX}.root" output="out_LST_${IDX}.root"
+cmsRun jmeTriggerNTuple_cfg.py track=MkFit  inputFiles="file:L1_output_${IDX}.root" output="out_MkFit_${IDX}.root"
+cmsRun jmeTriggerNTuple_cfg.py track=both   inputFiles="file:L1_output_${IDX}.root" output="out_both_${IDX}.root"
+cmsRun jmeTriggerNTuple_cfg.py track=menu   inputFiles="file:L1_output_${IDX}.root" output="out_menu_${IDX}.root"
+cmsRun jmeTriggerNTuple_cfg.py              inputFiles="file:L1_output_${IDX}.root" output="out_default_${IDX}.root"
+
+# Remove intermediates (keep final out_*.root for stage-out)
+rm -f Phase2*HLT.root "L1_output_${IDX}.root" || true
+
+# --- EOS stage-out ---
+# Best-effort directory creation on EOS.
+# If xrdfs fails due to missing shared libs, we keep going and rely on directory pre-existence.
+if command -v xrdfs >/dev/null 2>&1; then
+  echo "xrdfs eosuser.cern.ch mkdir -p ${EOS_DIR}"
+  xrdfs eosuser.cern.ch mkdir -p "${EOS_DIR}" || echo "[WARN] xrdfs mkdir failed (will try xrdcp anyway)."
+else
+  echo "[WARN] xrdfs not found; will try xrdcp assuming EOS_DIR exists: ${EOS_DIR}"
+fi
+
+stageout_ok=1
+for f in out_*_"${IDX}".root; do
+  echo "xrdcp -f ${f} -> ${EOS_DIR_XRD}/${f}"
+  if xrdcp -f "${f}" "${EOS_DIR_XRD}/${f}"; then
+    rm -f "${f}"   # delete local copy only after successful transfer
+  else
+    echo "[ERROR] xrdcp failed for ${f}"
+    stageout_ok=0
+  fi
+done
+
+if [[ "${stageout_ok}" -ne 1 ]]; then
+  echo "[ERROR] One or more outputs failed to transfer. Keeping local files in ${WORKDIR} for debugging."
+  exit 90
+fi
+
+echo "=== Done. Outputs staged to EOS and local copies removed. ==="

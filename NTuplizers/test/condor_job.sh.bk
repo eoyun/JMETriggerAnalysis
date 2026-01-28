@@ -1,0 +1,60 @@
+#!/bin/bash
+set -euo pipefail
+
+PROCESS="${1:?PROCESS missing}"
+START_SKIP="${2:?START_SKIP missing}"
+STEP="${3:?STEP missing}"
+DATE_TAG="${4:?DATE_TAG missing}"
+
+# numeric guard
+[[ "${PROCESS}" =~ ^[0-9]+$ ]] || { echo "PROCESS not numeric: ${PROCESS}"; exit 2; }
+[[ "${START_SKIP}" =~ ^[0-9]+$ ]] || { echo "START_SKIP not numeric: ${START_SKIP}"; exit 2; }
+[[ "${STEP}" =~ ^[0-9]+$ ]] || { echo "STEP not numeric: ${STEP}"; exit 2; }
+
+SKIP=$(( START_SKIP + STEP * PROCESS ))
+IDX=$(printf "%05d" "${SKIP}")
+
+echo "=== Processing events ${SKIP} -> $((SKIP+STEP-1)) (Process=${PROCESS}) ==="
+# EOS
+EOS_BASE="/eos/home-y/yeo/Phase2"
+EOS_XROOTD="root://eosuser.cern.ch"
+EOS_DIR="${EOS_BASE}/${DATE_TAG}"
+EOS_DIR_XRD="${EOS_XROOTD}//${EOS_DIR}"
+
+echo $EOS_DIR
+echo $EOS_DIR_XRD
+
+# CMSSW setup (이미 존재한다고 가정)
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+cmssw-el8
+export SCRAM_ARCH=el8_amd64_gcc13
+
+mkdir -p $EOS_DIR
+# ⚠️ CMSSW 경로로 직접 이동
+cd /afs/cern.ch/user/y/yeo/phase2/CMSSW_16_0_0_pre3/src
+eval "$(scramv1 runtime -sh)"
+
+# condor work dir로 복귀
+cd -
+
+echo "=== Events ${SKIP} -> $((SKIP+STEP-1)) ==="
+
+cmsRun jmeTriggerNTuple_L1Only_cfg.py \
+  maxEvents="${STEP}" \
+  skipEvents="${SKIP}" \
+  output="L1_output_${IDX}.root"
+
+cmsRun jmeTriggerNTuple_cfg.py track=LST    inputFiles="file:L1_output_${IDX}.root" output="out_LST_${IDX}.root"
+cmsRun jmeTriggerNTuple_cfg.py track=MkFit  inputFiles="file:L1_output_${IDX}.root" output="out_MkFit_${IDX}.root"
+cmsRun jmeTriggerNTuple_cfg.py track=both   inputFiles="file:L1_output_${IDX}.root" output="out_both_${IDX}.root"
+cmsRun jmeTriggerNTuple_cfg.py track=menu   inputFiles="file:L1_output_${IDX}.root" output="out_menu_${IDX}.root"
+cmsRun jmeTriggerNTuple_cfg.py              inputFiles="file:L1_output_${IDX}.root" output="out_default_${IDX}.root"
+
+rm -f Phase2*HLT.root L1_output_${IDX}.root || true
+
+# EOS stage-out
+xrdfs eosuser.cern.ch mkdir -p "${EOS_DIR}" || true
+for f in out_*_"${IDX}".root; do
+  xrdcp -f "${f}" "${EOS_DIR_XRD}/${f}"
+done
+

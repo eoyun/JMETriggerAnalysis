@@ -59,11 +59,6 @@ opts.register('globalTag', None,
               vpo.VarParsing.varType.string,
               'argument of process.GlobalTag.globaltag')
 
-opts.register('track', 'default',
-              vpo.VarParsing.multiplicity.singleton,
-              vpo.VarParsing.varType.string,
-              'keyword defining tracking algorithm option')
-
 opts.register('reco', 'default',
               vpo.VarParsing.multiplicity.singleton,
               vpo.VarParsing.varType.string,
@@ -111,22 +106,17 @@ opts.parseArguments()
 ### use base configuration files from L1 , HLT steps and define the final process
 ###
 
+from Configuration.ProcessModifiers.singleIterPatatrack_cff import singleIterPatatrack
+from Configuration.ProcessModifiers.phase2CAExtension_cff import phase2CAExtension
+from Configuration.ProcessModifiers.trackingLST_cff import trackingLST
+from Configuration.ProcessModifiers.seedingLST_cff import seedingLST
+from Configuration.ProcessModifiers.trackingMkFitCommon_cff import trackingMkFitCommon
+from Configuration.ProcessModifiers.hltTrackingMkFitInitialStep_cff import hltTrackingMkFitInitialStep
+from Configuration.ProcessModifiers.trackingMkFitFit_cff import trackingMkFitFit
 
 
-if opts.track == 'default':  
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process
-
-elif opts.track == 'LST':  
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_LST_cfg import cms, process
-
-elif opts.track == 'MkFit':  
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_MkFit_cfg import cms, process
-
-elif opts.track == 'both':  
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_LST_MkFit_cfg import cms, process
-
-elif opts.track == 'menu':  
-  from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_menu_cfg import cms, process
+if opts.reco == 'default':  
+  from HLT_75e33_D110_cfg import cms, process
 
 elif opts.reco == 'trimmedTracking':
   from JMETriggerAnalysis.Common.configs.HLT_75e33_D110_cfg import cms, process

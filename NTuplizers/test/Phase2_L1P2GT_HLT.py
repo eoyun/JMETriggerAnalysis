@@ -2,13 +2,13 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Phase2 -s L1P2GT,HLT:75e33 --processName=HLTX --conditions auto:phase2_realistic_T33 --geometry ExtendedRun4D110 --era Phase2C17I13M9 --eventcontent FEVTDEBUGHLT --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000 --filein file:output_Phase2_L1T.root '--inputCommands=keep *, drop *_hlt*_*_HLT, drop triggerTriggerFilterObjectWithRefs_l1t*_*_HLT' --mc -n 1 --nThreads 1 --procModifiers trackingMkFitFit
+# with command line options: Phase2 -s L1P2GT,HLT:75e33 --processName=HLTX --conditions auto:phase2_realistic_T33 --geometry ExtendedRun4D110 --era Phase2C17I13M9 --eventcontent FEVTDEBUGHLT --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000 --filein file:output_Phase2_L1T.root '--inputCommands=keep *, drop *_hlt*_*_HLT, drop triggerTriggerFilterObjectWithRefs_l1t*_*_HLT' --mc -n 1 --nThreads 1 --procModifiers trackingLST
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C17I13M9_cff import Phase2C17I13M9
-from Configuration.ProcessModifiers.trackingMkFitFit_cff import trackingMkFitFit
+from Configuration.ProcessModifiers.trackingLST_cff import trackingLST
 
-process = cms.Process('HLTX',Phase2C17I13M9,trackingMkFitFit)
+process = cms.Process('HLTX',Phase2C17I13M9,trackingLST)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
