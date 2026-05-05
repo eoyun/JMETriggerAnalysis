@@ -21,7 +21,7 @@ DATE_TAG="${4:?DATE_TAG missing}"
 
 FILE_EVT=1000
 
-mapfile -t filelist < ttbar.dat
+mapfile -t filelist < vbfinv.dat
 
 [[ "${PROCESS}" =~ ^[0-9]+$ ]] || { echo "PROCESS not numeric: ${PROCESS}"; exit 2; }
 [[ "${START_SKIP}" =~ ^[0-9]+$ ]] || { echo "START_SKIP not numeric: ${START_SKIP}"; exit 2; }
@@ -69,7 +69,7 @@ fi
 EOS_XROOTD="root://eosuser.cern.ch"
 EOS_DIR="/eos/cms/store/user/yeo/Phase2/${DATE_TAG}"
 EOS_DIR_XRD="${EOS_XROOTD}//${EOS_DIR}"
-AFS_DIR="/afs/cern.ch/user/y/yeo/phase2/CMSSW_16_0_0_pre3/src/JMETriggerAnalysis/NTuplizers/test/260126"
+AFS_DIR="/afs/cern.ch/user/y/yeo/phase2/CMSSW_16_0_0_pre3/src/JMETriggerAnalysis/NTuplizers/test/260206_vbf"
 
 echo "EOS_DIR=${EOS_DIR}"
 echo "EOS_DIR_XRD=${EOS_DIR_XRD}"
