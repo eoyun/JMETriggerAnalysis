@@ -487,29 +487,227 @@ python plot_script.py
 
 ---
 
-## Directory Structure
+## Expected Output File Structure
 
-After running the complete workflow, you should have:
+The following is based on actually running each step against a real input file (`260114.root`, 2460 events). File names follow the pattern `<inputfile>__<jobindex>` for per-job outputs.
+
+---
+
+### Step 1 output — `hadd_ntuples.py` → input NTuple
+
+```
+ntuples/
+└── 260114.root
+```
+
+**Internal ROOT structure:**
+```
+260114.root
+└── JMETriggerNTuple/          [TDirectoryFile]
+    └── Events                 [TTree, 184 branches]
+```
+
+**Branch groups in `Events`:**
+
+| Group | Example branches | Type |
+|-------|-----------------|------|
+| Event ID | `run`, `luminosityBlock`, `event` | `/i`, `/i`, `/l` |
+| Generator info | `HepMCGenEvent_scale`, `GenEventInfo_qScale` | `/F` |
+| Pileup (BX=0) | `pileupInfo_BX0_numPUInteractions`, `pileupInfo_BX0_numTrueInteractions`, `pileupInfo_BX0_n_pThat*` (10 bins) | `/I`, `/F`, `/i` |
+| HLT trigger flags | `MC_JME`, `HLT_AK4PFPuppiJet520`, `HLT_PFPuppiHT1070`, `HLT_PFPuppiMETTypeOne140_PFPuppiMHT140` | `/O` (bool) |
+| Rho + vertices | `fixedGridRhoFastjetAllTmp`, `hltPrimaryVerticesMultiplicity`, `hltPrimaryVertices_{x,y,z,chi2,ndof,...}` | `/D`, vector |
+| Gen jets AK4 | `ak4GenJetsNoNu_{pt,eta,phi,mass,energy fractions,multiplicities,...}` | vector |
+| Gen jets AK8 | `ak8GenJetsNoNu_{pt,eta,phi,mass,energy fractions,multiplicities,...}` | vector |
+| HLT jets (4 collections) | `hltAK4PFCHSJets_*`, `hltAK4PFJets_*`, `hltAK4PFPuppiJets_*`, `hltAK4PFPuppiJetsCorrected_*` — each with `{energy,pt,eta,phi,mass,jesc,jetArea,energy fractions,multiplicities}` | vector |
+| Gen MET | `genMETTrue_{pt,phi,sumEt,energy fractions}` | `/F` |
+| HLT MET (4 collections) | `hltCaloMET_*`, `hltPFMET_*`, `hltPFPuppiMET_*`, `hltPFPuppiMETTypeOne_*` — each with `{pt,phi,sumEt,energy fractions}` | `/F` |
+
+---
+
+### Step 2 output — `batch_driver.py` → job scripts
+
+One `.sh` + `.htc` pair is created per event-chunk per input file. With `-n 50000` and 2460 events, one chunk is created (`__0`):
+
+```
+jobs/
+├── htc/                                    [directory, created automatically]
+│   ├── 260114__0.out.<Cluster>.<Process>   [stdout from HTCondor]
+│   ├── 260114__0.err.<Cluster>.<Process>   [stderr from HTCondor]
+│   └── 260114__0.log.<Cluster>.<Process>   [HTCondor system log]
+├── 260114__0.sh                            [bash script run by HTCondor]
+└── 260114__0.htc                           [HTCondor submission config]
+```
+
+**`260114__0.sh` content:**
+```bash
+#!/bin/bash
+cd /path/to/CMSSW_16_0_0_pre3/src
+eval `scramv1 runtime -sh`
+cd - &> /dev/null
+
+set -e
+if [ -f /eos/.../260114__0.root ]; then rm -f /eos/.../260114__0.root; fi;
+run.py -i ntuples/260114.root -o /eos/.../260114__0.root \
+  -p JMETriggerAnalysisDriverPhase2 --skipEvents 0 --maxEvents 2460
+touch jobs/260114__0.completed
+```
+
+**`260114__0.htc` content:**
+```
+batch_name = 260114__0
+executable = /abs/path/jobs/260114__0.sh
+output = jobs/htc/260114__0.out.$(Cluster).$(Process)
+error  = jobs/htc/260114__0.err.$(Cluster).$(Process)
+log    = jobs/htc/260114__0.log.$(Cluster).$(Process)
+transfer_executable = True
+universe = vanilla
+getenv = True
+should_transfer_files   = IF_NEEDED
+when_to_transfer_output = ON_EXIT
+MY.WantOS = "el8"
+RequestMemory = 2000
++MaxRuntime = 10800
+queue
+```
+
+---
+
+### Step 3 — `batch_monitor.py` + job execution → per-job ROOT output + `.completed`
+
+After the job runs successfully:
+
+```
+jobs/
+├── htc/
+│   ├── 260114__0.out.12345.0   [stdout]
+│   ├── 260114__0.err.12345.0   [stderr — empty if no errors]
+│   └── 260114__0.log.12345.0   [HTCondor log]
+├── 260114__0.sh
+├── 260114__0.htc
+└── 260114__0.completed         [empty file, created by touch on job success]
+```
+
+The actual analysis ROOT output goes to the EOS directory (`-od`):
+
+```
+eos_outputs/
+└── 260114__0.root
+```
+
+**Internal ROOT structure of `260114__0.root` (produced by `run.py`):**
+```
+260114__0.root
+├── eventsProcessed    [TH1D — single bin, stores number of processed events]
+├── weight             [TH1D — event weight distribution]
+└── NoSelection/       [TDirectoryFile — 10,861 histogram objects total]
+    ├── ak4GenJetsNoNu_*           (6,669 objects: TH1D + TH2D)
+    ├── genMETTrue_*               (   13 objects: TH1D + TH2D + TH3D)
+    ├── hltAK4PFJets_*             (1,349 objects: TH1D + TH2D)
+    ├── hltAK4PFJetsCorrected_*    (    1 object:  TH2D)
+    ├── hltAK4PFPuppiJets_*        (1,349 objects: TH1D + TH2D)
+    ├── hltAK4PFPuppiJetsCorrected_* (1,350 objects: TH1D + TH2D)
+    ├── hltPFMET_*                 (   39 objects: TH1D + TH2D)
+    ├── hltPFPuppiHT_*             (    6 objects: TH1D + TH2D)
+    ├── hltPFPuppiMET_*            (   39 objects: TH1D + TH2D)
+    ├── hltPFPuppiMETTypeOne_*     (   43 objects: TH1D + TH2D)
+    └── l1tPFPuppiHT_*             (    3 objects: TH1D)
+```
+
+**Histogram naming convention inside `NoSelection/`:**
+
+| Pattern | Example | Description |
+|---------|---------|-------------|
+| `<obj>_<etabin>_<var>` | `ak4GenJetsNoNu_EtaIncl_pt` | 1D distribution |
+| `<obj>_<etabin>_<var>__vs__<var2>` | `ak4GenJetsNoNu_EtaIncl_pt__vs__hltPF_pt` | 2D response/correlation |
+| `<obj>_<etabin>_MatchedTo<reco>_<var>` | `ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppi_pt` | matched-object histogram |
+| `<obj>_<etabin>_njets` | `hltAK4PFPuppiJets_EtaIncl_njets` | jet multiplicity |
+| `<obj>_<etabin>_HT` | `hltAK4PFPuppiJets_EtaIncl_HT` | scalar HT sum |
+| `<met>_pt__vs__<other>_pt` | `genMETTrue_pt__vs__hltPFPuppiMETTypeOne_pt` | MET vs MET 2D |
+
+Eta bins used: `EtaIncl` (inclusive), `HBPt0`, `HEPt0`, `HFPt0`, etc.
+
+---
+
+### Step 4 output — `merge_batchOutputs.py` → merged ROOT file
+
+With a single input chunk, the file is renamed (not truly merged):
+
+```
+merged/
+└── 260114.root     [identical internal structure to step 3 output, 10,861 objects in NoSelection/]
+```
+
+With multiple chunks (`260114__0.root`, `260114__1.root`, ...), `hadd` merges them:
+```
+merged/
+└── 260114.root     [histogram counts summed across all chunks]
+```
+
+---
+
+### Step 5 output — `jmeAnalysisHarvester.py` → harvested ROOT file
+
+```
+harvested/
+└── 260114.root
+```
+
+**What changes vs. step 4:**
+
+The harvester transforms the histogram file:
+- **Adds 2,535 new derived objects** from the 10,861 input objects
+- **Removes intermediate source histograms** no longer needed after deriving
+- **Net result: 9,146 objects** in `NoSelection/`
+
+| New object type | Count | Naming pattern | Description |
+|----------------|-------|---------------|-------------|
+| `TGraphAsymmErrors` | 700 | `*_eff` | Efficiency curves (pass/total ratio with Clopper-Pearson errors) |
+| `TH1D` | 1,660 | `*_cumul`, `*_Mean_wrt_*` | Cumulative distributions and mean-vs-variable profiles |
+| `TH2D` | 175 | `*_eff` (2D) | 2D efficiency maps (eta vs pT) |
+
+**Examples of newly added objects:**
+```
+NoSelection/
+├── ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppiCorr_pt_eff   [TGraphAsymmErrors — jet matching eff vs pT]
+├── ak4GenJetsNoNu_EtaIncl_MatchedTohltPFPuppi_eta_eff       [TGraphAsymmErrors — jet matching eff vs eta]
+├── ak4GenJetsNoNu_EtaIncl_pt0_cumul                         [TH1D — cumulative leading jet pT]
+├── ak4GenJetsNoNu_EtaIncl_HT_cumul                          [TH1D — cumulative HT]
+├── ak4GenJetsNoNu_EtaIncl_MatchedTohltPF_eta__vs__pt_eff    [TH2D — 2D matching eff]
+└── hltPFPuppiMET_pt_Mean_wrt_GEN_pt                         [TH1D — mean MET response vs gen MET]
+```
+
+---
+
+### Full Directory Layout (All Steps Together)
 
 ```
 analysis/
-├── ntuples/              # Step 1: Merged NTuples from CRAB
-│   ├── sample1.root
-│   └── sample2.root
-├── jobs/                 # Step 2-3: Batch job scripts and logs
-│   ├── job_0.htc
-│   ├── job_0.log
-│   ├── job_0.err
-│   └── job_0.completed
-├── merged/               # Step 4: Merged batch outputs
-│   ├── sample1.root
-│   └── sample2.root
-├── harvested/            # Step 5: Post-processed with efficiencies
-│   ├── sample1.root
-│   └── sample2.root
-└── plots/                # Step 6: Final publication plots
-    ├── jet_pt.pdf
-    ├── met_eff.pdf
+│
+├── ntuples/                            [Step 1: hadd_ntuples.py]
+│   └── 260114.root                     TTree: JMETriggerNTuple/Events, 184 branches
+│
+├── jobs/                               [Step 2: batch_driver.py]
+│   ├── htc/
+│   │   ├── 260114__0.out.<C>.<P>       HTCondor stdout
+│   │   ├── 260114__0.err.<C>.<P>       HTCondor stderr
+│   │   └── 260114__0.log.<C>.<P>       HTCondor system log
+│   ├── 260114__0.sh                    bash script (sets CMSSW env, runs run.py)
+│   ├── 260114__0.htc                   HTCondor job config
+│   └── 260114__0.completed             [Step 3] empty marker, created on job success
+│
+├── eos_outputs/                        [Step 3: run.py via HTCondor]
+│   └── 260114__0.root                  TH1D/TH2D histograms in NoSelection/ (10,861 objects)
+│
+├── merged/                             [Step 4: merge_batchOutputs.py]
+│   └── 260114.root                     same internal structure, chunks summed (10,861 objects)
+│
+├── harvested/                          [Step 5: jmeAnalysisHarvester.py]
+│   └── 260114.root                     9,146 objects: original histos + 2,535 new
+│                                       (TGraphAsymmErrors efficiencies, cumulative TH1D, 2D eff maps)
+│
+└── plots/                              [Step 6: plotting scripts]
+    ├── jetPt_response.pdf
+    ├── met_efficiency.pdf
     └── trigger_turnon.pdf
 ```
 
