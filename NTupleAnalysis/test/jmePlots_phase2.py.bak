@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import argparse
 import os
 import ROOT
@@ -90,7 +90,7 @@ def updateDictionary(dictionary, TDirectory, prefix='', verbose=False):
            dictionary[out_key].SetDirectory(0)
 
            if verbose:
-              print(colored_text('[input]', ['1','92']), out_key)
+              print colored_text('[input]', ['1','92']), out_key
 
     return dictionary
 
@@ -375,7 +375,7 @@ def plot(output_extensions, stickers, output, templates, title, legXY=[], divide
         out_file = output_basename_woExt+'.'+i_ext
         canvas.SaveAs(out_file)
 
-        print(colored_text('[file]', ['1','95']), os.path.relpath(out_file))
+        print colored_text('[file]', ['1','95']), os.path.relpath(out_file)
 
     canvas.Close()
 
@@ -1776,4 +1776,4 @@ if __name__ == '__main__':
              title = ';'+i_metv+' [GeV];Efficiency',
            )
 
-   print(colored_text('[output]', ['1','92']), os.path.relpath(opts.output))
+   print colored_text('[output]', ['1','92']), os.path.relpath(opts.output)

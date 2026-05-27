@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import os
 import sys
 import argparse
@@ -472,12 +472,12 @@ def getMETEfficiencies(**kwargs):
   return ret
 
 def plotJetResponse(fpath_PU140, fpath_PU200, outputName, exts):
-  for (_etaTag, _etaLabel) in list({
+  for (_etaTag, _etaLabel) in {
     'EtaIncl': '|#eta| < 5.0',
     'HB': '|#eta| < 1.5',
     'HGCal': '1.5 < |#eta| < 3.0',
     'HF': '3.0 < |#eta| < 5.0',
-  }.items()):
+  }.items():
    histos = {
      'PU140': {'pt030to100': None, 'pt100to300': None, 'pt300to600': None},
      'PU200': {'pt030to100': None, 'pt100to300': None, 'pt300to600': None},
@@ -654,7 +654,7 @@ def plotJetResponse(fpath_PU140, fpath_PU200, outputName, exts):
 
    canvas.Close()
 
-   print('\033[1m'+outputName+'_'+_etaTag+'\033[0m')
+   print '\033[1m'+outputName+'_'+_etaTag+'\033[0m'
 
 def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
   histos = {
@@ -872,7 +872,7 @@ def plotJetResolution(fpath_PU140, fpath_PU200, outputName, exts):
 
   canvas.Close()
 
-  print('\033[1m'+outputName+'\033[0m')
+  print '\033[1m'+outputName+'\033[0m'
 
 def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
   if keyword == 'HLT':
@@ -1101,7 +1101,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
 
   canvas.Close()
 
-  print('\033[1m'+outputName+'_recoMatchEff'+'\033[0m')
+  print '\033[1m'+outputName+'_recoMatchEff'+'\033[0m'
 
   # HLT - NotMatchedToGEN
   graphs = {
@@ -1316,7 +1316,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
 
   canvas.Close()
 
-  print('\033[1m'+outputName+'_recoMistagRate'+'\033[0m')
+  print '\033[1m'+outputName+'_recoMistagRate'+'\033[0m'
 
   # GEN - MatchedToReco
   graphs = {
@@ -1531,7 +1531,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
 
   canvas.Close()
 
-  print('\033[1m'+outputName+'_genMatchEff'+'\033[0m')
+  print '\033[1m'+outputName+'_genMatchEff'+'\033[0m'
 
   # GEN - NotMatchedToReco
   graphs = {
@@ -1746,7 +1746,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
 
   canvas.Close()
 
-  print('\033[1m'+outputName+'_genMistagRate'+'\033[0m')
+  print '\033[1m'+outputName+'_genMistagRate'+'\033[0m'
 
   # GEN - MatchedToReco wrt eta
   graphs = {
@@ -1965,7 +1965,7 @@ def plotJetMatchingEff(fpath_PU140, fpath_PU200, keyword, outputName, exts):
 
   canvas.Close()
 
-  print('\033[1m'+outputName+'_genMatchEff_wrtEta'+'\033[0m')
+  print '\033[1m'+outputName+'_genMatchEff_wrtEta'+'\033[0m'
 
 def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
   histos = {
@@ -1992,12 +1992,12 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
       WARNING('failed to open target TFile: '+_tmpFilePath)
       continue
 
-    for _metTag, _metHist in list({
+    for _metTag, _metHist in {
       'PFRaw': 'NoSelection/hltPFMET_pt_overGEN__vs__GEN_pt',
       'PFCHSRaw': 'NoSelection/hltPFCHSMET_pt_overGEN__vs__GEN_pt',
       'PFPuppiRaw': 'NoSelection/hltPFPuppiMET_pt_overGEN__vs__GEN_pt',
       'PFPuppiTypeOne': 'NoSelection/hltPFPuppiMETTypeOne_pt_overGEN__vs__GEN_pt',
-    }.items()):
+    }.items():
       h1vals = []
       _h2tmp = getHistogram(_tmpTFile, _metHist)
       binEdges = array.array('d', histos[_puTag][_metTag])
@@ -2153,7 +2153,7 @@ def plotMETResponse(fpath_PU140, fpath_PU200, outputName, exts):
 
   canvas.Close()
 
-  print('\033[1m'+outputName+'\033[0m')
+  print '\033[1m'+outputName+'\033[0m'
 
 def plotMETResolution(resType, fpath_PU140, fpath_PU200, outputName, exts):
   histos = {
@@ -2180,12 +2180,12 @@ def plotMETResolution(resType, fpath_PU140, fpath_PU200, outputName, exts):
       WARNING('failed to open target TFile: '+_tmpFilePath)
       continue
 
-    for _metTag, _metHistPrefix in list({
+    for _metTag, _metHistPrefix in {
       'PFRaw': 'NoSelection/hltPFMET_pt_',
       'PFCHSRaw': 'NoSelection/hltPFCHSMET_pt_',
       'PFPuppiRaw': 'NoSelection/hltPFPuppiMET_pt_',
       'PFPuppiTypeOne': 'NoSelection/hltPFPuppiMETTypeOne_pt_',
-    }.items()):
+    }.items():
       h1vals = []
       binEdges = array.array('d', histos[_puTag][_metTag])
       # mean
@@ -2346,7 +2346,7 @@ def plotMETResolution(resType, fpath_PU140, fpath_PU200, outputName, exts):
 
   canvas.Close()
 
-  print('\033[1m'+outputName+'\033[0m')
+  print '\033[1m'+outputName+'\033[0m'
 
 #### main
 if __name__ == '__main__':
@@ -2409,11 +2409,11 @@ if __name__ == '__main__':
   MKDIRP(opts.output, verbose = (opts.verbosity > 0), dry_run = opts.dry_run)
 
   for _tmpReco in recoKeys:
-    print('='*110)
-    print('='*110)
-    print('\033[1m'+_tmpReco+'\033[0m')
-    print('='*110)
-    print('='*110)
+    print '='*110
+    print '='*110
+    print '\033[1m'+_tmpReco+'\033[0m'
+    print '='*110
+    print '='*110
 
     plotJetResponse(
       fpath_PU140 = inputDir+'/'+_tmpReco+'/Phase2HLTTDR_QCD_PtFlat15to3000_14TeV_PU140.root',
@@ -2461,11 +2461,11 @@ if __name__ == '__main__':
         exts = EXTS,
       )
 
-    print('='*50)
-    print('='*50)
-    print('\033[1m'+'Efficiency Plots'+'\033[0m')
-    print('='*50)
-    print('='*50)
+    print '='*50
+    print '='*50
+    print '\033[1m'+'Efficiency Plots'+'\033[0m'
+    print '='*50
+    print '='*50
 
     ## SingleJet
     effysJet = {}
@@ -2615,7 +2615,7 @@ if __name__ == '__main__':
 
       canvas.Close()
 
-      print('\033[1m'+outputDir+'/triggerEff_SingleJet_wrt'+_tmpRef+'\033[0m')
+      print '\033[1m'+outputDir+'/triggerEff_SingleJet_wrt'+_tmpRef+'\033[0m'
 
     ## HT
     effysHT = {}
@@ -2756,7 +2756,7 @@ if __name__ == '__main__':
 
       canvas.Close()
 
-      print('\033[1m'+outputDir+'/triggerEff_HT_wrt'+_tmpRef+'\033[0m')
+      print '\033[1m'+outputDir+'/triggerEff_HT_wrt'+_tmpRef+'\033[0m'
 
     ## MET
     effysMET_vbfh = {}
@@ -2926,7 +2926,7 @@ if __name__ == '__main__':
   
         canvas.Close()
   
-        print('\033[1m'+outputDir+'/triggerEff_METRaw_wrt'+_tmpRef+'_'+_tmpMC+'\033[0m')
+        print '\033[1m'+outputDir+'/triggerEff_METRaw_wrt'+_tmpRef+'_'+_tmpMC+'\033[0m'
   
         # METTypeOne (+MHT)
         for _tmpPU in [
@@ -3033,7 +3033,7 @@ if __name__ == '__main__':
 
               canvas.Close()
 
-              print('\033[1m'+outputDir+'/triggerEff_'+_tmpMET+'_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpHLTthr+'_'+_tmpMC+'\033[0m')
+              print '\033[1m'+outputDir+'/triggerEff_'+_tmpMET+'_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpHLTthr+'_'+_tmpMC+'\033[0m'
 
         # MET (TypeOne vs TypeOne+MHT)
         for _tmpPU in [
@@ -3164,7 +3164,7 @@ if __name__ == '__main__':
   
               canvas.Close()
   
-              print('\033[1m'+outputDir+'/triggerEff_METTypeOneX_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpEff+'_'+_tmpHLTthr+'_'+_tmpMC+'\033[0m')
+              print '\033[1m'+outputDir+'/triggerEff_METTypeOneX_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpEff+'_'+_tmpHLTthr+'_'+_tmpMC+'\033[0m'
   
         # MET (TypeOne vs TypeOne+MHT vs 2018)
         for _tmpPU in [
@@ -3280,7 +3280,7 @@ if __name__ == '__main__':
 
           canvas.Close()
 
-          print('\033[1m'+outputDir+'/triggerEff_METTypeOneXvs2018_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpMC+'\033[0m')
+          print '\033[1m'+outputDir+'/triggerEff_METTypeOneXvs2018_wrt'+_tmpRef+'_'+_tmpPU+'_'+_tmpMC+'\033[0m'
 
       # MET (VBF-HiggsToInv vs TTbar)
       for _tmpEff in [
@@ -3452,7 +3452,7 @@ if __name__ == '__main__':
 
             canvas.Close()
 
-            print('\033[1m'+outputDir+'/triggerEff_TTbarVsVBFHToInv_'+_tmpMETType+'_wrt'+_tmpRef+'_'+_tmpEff+'_'+_tmpHLTthr+'\033[0m')
+            print '\033[1m'+outputDir+'/triggerEff_TTbarVsVBFHToInv_'+_tmpMETType+'_wrt'+_tmpRef+'_'+_tmpEff+'_'+_tmpHLTthr+'\033[0m'
 
   ###
   ### Rates
@@ -3585,11 +3585,11 @@ if __name__ == '__main__':
       'PU140',
       'PU200',
     ]:
-      print('='*110)
-      print('='*110)
-      print('\033[1m'+'Rates ['+_puTag+']'+'\033[0m')
-      print('='*110)
-      print('='*110)
+      print '='*110
+      print '='*110
+      print '\033[1m'+'Rates ['+_puTag+']'+'\033[0m'
+      print '='*110
+      print '='*110
 
       rates[_tmpReco][_puTag] = {}
       for _tmp in rateSamples:
@@ -3653,9 +3653,9 @@ if __name__ == '__main__':
         ['L1T_PFPuppiMET220off2', 'HLT_PFPuppiMETTypeOneMHT40_'+str(rateConfig[_puTag]['hltThresholdMETTypeOneMHT40'])],
         ['L1T_PFPuppiMET220off2', 'HLT_PFPuppiMETTypeOneMHT50_'+str(rateConfig[_puTag]['hltThresholdMETTypeOneMHT50'])],
       ]:
-        print('-'*110)
-        print('\033[1m{:10}\033[0m | \033[1m{:47}\033[0m | \033[1m{:47}\033[0m'.format('Rate [Hz]', '[L1] '+_tmpL1T, '[L1+HLT] '+_tmpHLT))
-        print('-'*110)
+        print '-'*110
+        print '\033[1m{:10}\033[0m | \033[1m{:47}\033[0m | \033[1m{:47}\033[0m'.format('Rate [Hz]', '[L1] '+_tmpL1T, '[L1+HLT] '+_tmpHLT)
+        print '-'*110
 
         for _tmp1 in sorted(rateGroup.keys()):
           l1tRate = rateDict[_tmpReco][_puTag][_tmpL1T][_tmp1][0]
@@ -3673,13 +3673,13 @@ if __name__ == '__main__':
           if hltCount < opts.minCountsForValidRate:
             hltRate, hltRateErr = -99., -99.
 
-          print('{:<10} | {:>11.2f} +/- {:>10.2f} [counts = {:9.1f}] | {:>11.2f} +/- {:>10.2f} [counts = {:9.1f}]'.format(_tmp1,
+          print '{:<10} | {:>11.2f} +/- {:>10.2f} [counts = {:9.1f}] | {:>11.2f} +/- {:>10.2f} [counts = {:9.1f}]'.format(_tmp1,
             l1tRate, l1tRateErr, l1tCount,
             hltRate, hltRateErr, hltCount
-          ))
+          )
 
       rateHistos[_tmpReco][_puTag] = {}
-      for _tmpVar, _tmpSamples in list({
+      for _tmpVar, _tmpSamples in {
 #        # L1T
 #        'l1tSlwPFPuppiJet': ['MB'],
 #        'l1tPFPuppiHT'    : ['MB'],
@@ -3697,7 +3697,7 @@ if __name__ == '__main__':
         'hltPFPuppiMETTypeOneMHT30': ['MB+QCD+V'],
         'hltPFPuppiMETTypeOneMHT40': ['MB+QCD+V'],
         'hltPFPuppiMETTypeOneMHT50': ['MB+QCD+V'],
-      }.items()):
+      }.items():
         rateHistos[_tmpReco][_puTag][_tmpVar] = None
         for _tmp1 in _tmpSamples:
           for _tmp2 in rateGroup[_tmp1]:
@@ -3710,11 +3710,11 @@ if __name__ == '__main__':
             else:
               rateHistos[_tmpReco][_puTag][_tmpVar] = h0.Clone()
 
-    print('='*50)
-    print('='*50)
-    print('\033[1m'+'Rate Plots'+'\033[0m')
-    print('='*50)
-    print('='*50)
+    print '='*50
+    print '='*50
+    print '\033[1m'+'Rate Plots'+'\033[0m'
+    print '='*50
+    print '='*50
 
     ## Single-Jet
     canvas = ROOT.TCanvas(tmpName(), tmpName(False))
@@ -3822,7 +3822,7 @@ if __name__ == '__main__':
 
     canvas.Close()
 
-    print('\033[1m'+outputDir+'/triggerRate_SingleJet'+'\033[0m')
+    print '\033[1m'+outputDir+'/triggerRate_SingleJet'+'\033[0m'
 
     ## HT
     canvas = ROOT.TCanvas(tmpName(), tmpName(False))
@@ -3931,7 +3931,7 @@ if __name__ == '__main__':
 
     canvas.Close()
 
-    print('\033[1m'+outputDir+'/triggerRate_HT'+'\033[0m')
+    print '\033[1m'+outputDir+'/triggerRate_HT'+'\033[0m'
 
     ## MET (Raw)
     canvas = ROOT.TCanvas(tmpName(), tmpName(False))
@@ -4039,7 +4039,7 @@ if __name__ == '__main__':
 
     canvas.Close()
 
-    print('\033[1m'+outputDir+'/triggerRate_METRaw'+'\033[0m')
+    print '\033[1m'+outputDir+'/triggerRate_METRaw'+'\033[0m'
 
     ## MET (TypeOne)
     canvas = ROOT.TCanvas(tmpName(), tmpName(False))
@@ -4143,7 +4143,7 @@ if __name__ == '__main__':
 
     canvas.Close()
 
-    print('\033[1m'+outputDir+'/triggerRate_METTypeOne'+'\033[0m')
+    print '\033[1m'+outputDir+'/triggerRate_METTypeOne'+'\033[0m'
 
     ## MET (TypeOne)
     for _metType in [
@@ -4253,7 +4253,7 @@ if __name__ == '__main__':
 
       canvas.Close()
 
-      print('\033[1m'+outputDir+'/triggerRate_'+_metType+'\033[0m')
+      print '\033[1m'+outputDir+'/triggerRate_'+_metType+'\033[0m'
 
     ## MET comparison (Raw vs TypeOne vs TypeOne+MHT)
     for _tmpPU in [
@@ -4415,9 +4415,9 @@ if __name__ == '__main__':
         canvas.SaveAs(outputDir+'/triggerRate_METTypeOneX_'+_tmpPU+'.'+_tmpExt)
       canvas.Close()
 
-      print('\033[1m'+outputDir+'/triggerRate_METTypeOneX_'+_tmpPU+'\033[0m')
+      print '\033[1m'+outputDir+'/triggerRate_METTypeOneX_'+_tmpPU+'\033[0m'
 
-  print('='*50)
+  print '='*50
 
 ## for _tmp1 in sorted(rateDict.keys()):
 ##   for _tmp2 in sorted(rateDict[_tmp1].keys()):

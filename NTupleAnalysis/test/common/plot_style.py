@@ -130,3 +130,8 @@ def get_style(type_=0):
     s.SetPadTickY(1)
 
     return s
+
+def apply_style(type_=0):
+    s = get_style(type_)
+    s.cd()
+    ROOT.gROOT.ForceStyle()

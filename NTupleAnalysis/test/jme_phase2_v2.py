@@ -420,17 +420,12 @@ def get_templates(key, histograms, PU_tag, directory, var, skipGEN=False):
        style_dict = {
 
          'ak4GenJetsNoNu': {'LineColor': 1, 'MarkerSize': 1.5, 'MarkerStyle': 27, 'MarkerColor': 1},
-         'hltAK4PFJetsCorrected': {'LineColor': ROOT.kBlue, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kBlue},
-         'hltAK4PFCHSJetsCorrected': {'LineColor': ROOT.kOrange+1, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kOrange+1},
-         'hltAK4PuppiJetsCorrected': {'LineColor': ROOT.kViolet, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kViolet},
-         'offlineAK4PFCHSJetsCorrected': {'LineColor': ROOT.kOrange+1, 'MarkerSize': 1.5, 'MarkerStyle': 20, 'MarkerColor': ROOT.kOrange+1},
-         'offlineAK4PuppiJetsCorrected': {'LineColor': ROOT.kViolet, 'MarkerSize': 1.5, 'MarkerStyle': 20, 'MarkerColor': ROOT.kViolet},
+         'hltAK4PFJets': {'LineColor': ROOT.kBlue, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kBlue},
+         'hltAK4PFCHSJets': {'LineColor': ROOT.kOrange+1, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kOrange+1},
+         'hltAK4PFPuppiJets': {'LineColor': ROOT.kViolet, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kViolet},
+         'hltAK4PFPuppiJetsCorrected': {'LineColor': ROOT.kGreen+2, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kGreen+2},
 
          'ak8GenJetsNoNu': {'LineColor': 1, 'MarkerSize': 1.5, 'MarkerStyle': 27, 'MarkerColor': 1},
-         'hltAK8PFJetsCorrected': {'LineColor': ROOT.kBlue, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kBlue},
-         'hltAK8PFCHSJetsCorrected': {'LineColor': ROOT.kOrange+1, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kOrange+1},
-         'hltAK8PuppiJetsCorrected': {'LineColor': ROOT.kViolet, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kViolet},
-         'offlineAK8PuppiJetsCorrected': {'LineColor': ROOT.kViolet, 'MarkerSize': 1.5, 'MarkerStyle': 20, 'MarkerColor': ROOT.kViolet},
 
          'genMETCalo': {'LineColor': 1, 'MarkerSize': 1.5, 'MarkerStyle': 27, 'MarkerColor': 1},
          'genMETTrue': {'LineColor': 1, 'MarkerSize': 1.5, 'MarkerStyle': 27, 'MarkerColor': 1},
@@ -441,6 +436,8 @@ def get_templates(key, histograms, PU_tag, directory, var, skipGEN=False):
          'hltPuppiMETWithPuppiForJets': {'LineColor': ROOT.kCyan, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kCyan},
          'hltPFMETCHS': {'LineColor': ROOT.kGray+1, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kGray+1},
          'hltPFMETSoftKiller': {'LineColor': ROOT.kPink+1, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kPink+1},
+         'hltPFMETNoMu': {'LineColor': ROOT.kOrange+2, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kOrange+2},
+         'hltPuppiMETNoMu': {'LineColor': ROOT.kAzure+2, 'LineStyle': 2, 'MarkerSize': 1.5, 'MarkerStyle': 24, 'MarkerColor': ROOT.kAzure+2},
          'offlineMETs_Raw': {'LineColor': ROOT.kOrange+1, 'MarkerSize': 1.5, 'MarkerStyle': 20, 'MarkerColor': ROOT.kOrange+1},
          'offlineMETs_Type1': {'LineColor': ROOT.kRed, 'MarkerSize': 1.5, 'MarkerStyle': 20, 'MarkerColor': ROOT.kRed},
          'offlineMETsPuppi_Raw': {'LineColor': ROOT.kAzure, 'MarkerSize': 1.5, 'MarkerStyle': 20, 'MarkerColor': ROOT.kAzure},
@@ -455,17 +452,12 @@ def get_templates(key, histograms, PU_tag, directory, var, skipGEN=False):
        style_dict = {
 
          'ak4GenJetsNoNu': {'LineColor': 1},
-         'hltAK4PFJetsCorrected': {'LineColor': ROOT.kBlue, 'LineStyle': 2},
-         'hltAK4PFCHSJetsCorrected': {'LineColor': ROOT.kOrange+1, 'LineStyle': 2},
-         'hltAK4PuppiJetsCorrected': {'LineColor': ROOT.kViolet, 'LineStyle': 2},
-         'offlineAK4PFCHSJetsCorrected': {'LineColor': ROOT.kOrange+1},
-         'offlineAK4PuppiJetsCorrected': {'LineColor': ROOT.kViolet},
+         'hltAK4PFJets': {'LineColor': ROOT.kBlue, 'LineStyle': 2},
+         'hltAK4PFCHSJets': {'LineColor': ROOT.kOrange+1, 'LineStyle': 2},
+         'hltAK4PFPuppiJets': {'LineColor': ROOT.kViolet, 'LineStyle': 2},
+         'hltAK4PFPuppiJetsCorrected': {'LineColor': ROOT.kGreen+2, 'LineStyle': 2},
 
          'ak8GenJetsNoNu': {'LineColor': 1},
-         'hltAK8PFJetsCorrected': {'LineColor': ROOT.kBlue, 'LineStyle': 2},
-         'hltAK8PFCHSJetsCorrected': {'LineColor': ROOT.kOrange+1, 'LineStyle': 2},
-         'hltAK8PuppiJetsCorrected': {'LineColor': ROOT.kViolet, 'LineStyle': 2},
-         'offlineAK8PuppiJetsCorrected': {'LineColor': ROOT.kViolet},
 
          'genMETCalo': {'LineColor': 1},
          'genMETTrue': {'LineColor': 1},
@@ -476,6 +468,8 @@ def get_templates(key, histograms, PU_tag, directory, var, skipGEN=False):
          'hltPuppiMETWithPuppiForJets': {'LineColor': ROOT.kCyan, 'LineStyle': 2},
          'hltPFMETCHS': {'LineColor': ROOT.kGray+1, 'LineStyle': 2},
          'hltPFMETSoftKiller': {'LineColor': ROOT.kPink+1, 'LineStyle': 2},
+         'hltPFMETNoMu': {'LineColor': ROOT.kOrange+2, 'LineStyle': 2},
+         'hltPuppiMETNoMu': {'LineColor': ROOT.kAzure+2, 'LineStyle': 2},
          'offlineMETs_Raw': {'LineColor': ROOT.kOrange+1},
          'offlineMETs_Type1': {'LineColor': ROOT.kRed},
          'offlineMETsPuppi_Raw': {'LineColor': ROOT.kAzure},
@@ -485,30 +479,29 @@ def get_templates(key, histograms, PU_tag, directory, var, skipGEN=False):
     if key in ['AK4Jets_PFCHS', 'AK4Jets_PFCHS_p']:
        the_templates += [
          {'TH1': clone_histogram(histograms, PU_tag, directory+'ak4GenJetsNoNu'+var, style_dict['ak4GenJetsNoNu']), 'draw': opt_draw, 'legendName': 'GEN', 'legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFCHSJetsCorrected'+var, style_dict['hltAK4PFCHSJetsCorrected']), 'draw': opt_draw, 'legendName': 'HLT PF+CHS', 'legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'offlineAK4PFCHSJetsCorrected'+var, style_dict['offlineAK4PFCHSJetsCorrected']), 'draw': opt_draw, 'legendName': 'Offline PF+CHS', 'legendDraw': opt_legDraw},
+         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFCHSJets'+var, style_dict['hltAK4PFCHSJets']), 'draw': opt_draw, 'legendName': 'HLT PF+CHS', 'legendDraw': opt_legDraw},
        ]
 
     elif key in ['AK4Jets_Puppi', 'AK4Jets_Puppi_p']:
        the_templates += [
          {'TH1': clone_histogram(histograms, PU_tag, directory+'ak4GenJetsNoNu'+var, style_dict['ak4GenJetsNoNu']), 'draw': opt_draw, 'legendName': 'GEN', 'legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PuppiJetsCorrected'+var, style_dict['hltAK4PuppiJetsCorrected']), 'draw': opt_draw, 'legendName': 'HLT AK4 Puppi','legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'offlineAK4PuppiJetsCorrected'+var, style_dict['offlineAK4PuppiJetsCorrected']), 'draw': opt_draw, 'legendName': 'Offline AK4 Puppi', 'legendDraw': opt_legDraw},
+         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFPuppiJets'+var, style_dict['hltAK4PFPuppiJets']), 'draw': opt_draw, 'legendName': 'HLT AK4 PF PUPPI','legendDraw': opt_legDraw},
+         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFPuppiJetsCorrected'+var, style_dict['hltAK4PFPuppiJetsCorrected']), 'draw': opt_draw, 'legendName': 'HLT AK4 PF PUPPI (corr)', 'legendDraw': opt_legDraw},
        ]
 
     elif key in ['AK4Jets_HLT', 'AK4Jets_HLT_p']:
        the_templates += [
          {'TH1': clone_histogram(histograms, PU_tag, directory+'ak4GenJetsNoNu'+var, style_dict['ak4GenJetsNoNu']), 'draw': opt_draw, 'legendName': 'GEN', 'legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFJetsCorrected'+var, style_dict['hltAK4PFJetsCorrected']), 'draw': opt_draw,'legendName': 'HLT AK4 PF','legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFCHSJetsCorrected'+var, style_dict['hltAK4PFCHSJetsCorrected']), 'draw': opt_draw,'legendName': 'HLT AK4 PF+CHS','legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PuppiJetsCorrected'+var, style_dict['hltAK4PuppiJetsCorrected']), 'draw': opt_draw,'legendName': 'HLT AK4 Puppi','legendDraw': opt_legDraw},
+         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFJets'+var, style_dict['hltAK4PFJets']), 'draw': opt_draw,'legendName': 'HLT AK4 PF','legendDraw': opt_legDraw},
+         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFCHSJets'+var, style_dict['hltAK4PFCHSJets']), 'draw': opt_draw,'legendName': 'HLT AK4 PF+CHS','legendDraw': opt_legDraw},
+         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFPuppiJets'+var, style_dict['hltAK4PFPuppiJets']), 'draw': opt_draw,'legendName': 'HLT AK4 PF PUPPI','legendDraw': opt_legDraw},
+         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFPuppiJetsCorrected'+var, style_dict['hltAK4PFPuppiJetsCorrected']), 'draw': opt_draw,'legendName': 'HLT AK4 PF PUPPI (corr)','legendDraw': opt_legDraw},
        ]
 
     elif key in ['AK4Jets_Offline', 'AK4Jets_Offline_p']:
        the_templates += [
          {'TH1': clone_histogram(histograms, PU_tag, directory+'ak4GenJetsNoNu'+var, style_dict['ak4GenJetsNoNu']), 'draw': opt_draw, 'legendName': 'GEN', 'legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'offlineAK4PFCHSJetsCorrected'+var, style_dict['offlineAK4PFCHSJetsCorrected']), 'draw': opt_draw, 'legendName': 'Offline AK4 PF+CHS', 'legendDraw': opt_legDraw},
-         {'TH1': clone_histogram(histograms, PU_tag, directory+'offlineAK4PuppiJetsCorrected'+var, style_dict['offlineAK4PuppiJetsCorrected']), 'draw': opt_draw, 'legendName': 'Offline AK4 Puppi', 'legendDraw': opt_legDraw},
+         {'TH1': clone_histogram(histograms, PU_tag, directory+'hltAK4PFPuppiJetsCorrected'+var, style_dict['hltAK4PFPuppiJetsCorrected']), 'draw': opt_draw, 'legendName': 'HLT AK4 PF PUPPI (corr)', 'legendDraw': opt_legDraw},
        ]
 
     elif key in ['AK8Jets_Puppi', 'AK8Jets_Puppi_p']:
@@ -746,16 +739,10 @@ if __name__ == '__main__':
 
    JetCollections = GENJetCollections + [
 
-     'hltAK4PFJetsCorrected',
-     'hltAK4PFCHSJetsCorrected',
-     'hltAK4PuppiJetsCorrected',
-     'offlineAK4PFCHSJetsCorrected',
-     'offlineAK4PuppiJetsCorrected',
-
-     'hltAK8PFJetsCorrected',
-     'hltAK8PFCHSJetsCorrected',
-     'hltAK8PuppiJetsCorrected',
-     'offlineAK8PuppiJetsCorrected',
+     'hltAK4PFJets',
+     'hltAK4PFCHSJets',
+     'hltAK4PFPuppiJets',
+     'hltAK4PFPuppiJetsCorrected',
    ]
 
    METCollections = [
@@ -910,10 +897,10 @@ if __name__ == '__main__':
 
                # pT Response wrt GEN pT/eta
                for (i_key, i_title, i_ymin, i_ymax) in [
-                 ('pt_overGEN_Mean_wrt_GEN_EtaIncl_pt', ';GEN Jet p_{T} [GeV];Response <Reco/GEN>', 0.1, 3.0),
-                 ('pt_overGEN_Mean_wrt_GEN_EtaIncl_eta', ';GEN Jet #eta;Response <Reco/GEN>', 0.1, 3.0),
-                 ('pt_minusGEN_Mean_wrt_GEN_EtaIncl_pt', ';GEN Jet p_{T} [GeV];<Reco#minus GEN> [GeV]', -200, 200),
-                 ('pt_minusGEN_Mean_wrt_GEN_EtaIncl_eta', ';GEN Jet #eta;<Reco#minus GEN> [GeV]', -200, 200),
+                 ('pt_overGEN_Mean_wrt_GEN_pt', ';GEN Jet p_{T} [GeV];Response <Reco/GEN>', 0.1, 3.0),
+                 ('pt_overGEN_Mean_wrt_GEN_eta', ';GEN Jet #eta;Response <Reco/GEN>', 0.1, 3.0),
+                 ('pt_minusGEN_Mean_wrt_GEN_pt', ';GEN Jet p_{T} [GeV];<Reco#minus GEN> [GeV]', -200, 200),
+                 ('pt_minusGEN_Mean_wrt_GEN_eta', ';GEN Jet #eta;<Reco#minus GEN> [GeV]', -200, 200),
 
                  ('pt_overOffline_Mean_wrt_Offline_pt', ';Offline Jet p_{T} [GeV];Response <HLT/Offline>', 0.1, 3.0),
                  ('pt_overOffline_Mean_wrt_Offline_eta', ';Offline Jet #eta;Response <HLT/Offline>', 0.1, 3.0),
