@@ -2,13 +2,12 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Phase2 -s L1,L1TrackTrigger --conditions auto:phase2_realistic_T33 --geometry ExtendedRun4D110 --era Phase2C17I13M9 --eventcontent RAW --datatier GEN-SIM-DIGI-RAW-MINIAOD --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000,Configuration/DataProcessing/Utils.addMonitoring,L1Trigger/Configuration/customisePhase2FEVTDEBUGHLT.customisePhase2FEVTDEBUGHLT,L1Trigger/Configuration/customisePhase2TTOn110.customisePhase2TTOn110 --filein /store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_AllTP_140X_mcRun4_realistic_v4-v1/2560000/11d1f6f0-5f03-421e-90c7-b5815197fc85.root --fileout file:output_Phase2_L1T.root --python_filename rerunL1_cfg.py '--inputCommands=keep *, drop l1tPFJets_*_*_*, drop l1tTrackerMuons_l1tTkMuonsGmt*_*_HLT' '--outputCommands=keep *, drop l1tTrackerMuons_l1tTkMuonsGmt*_*_HLT' --mc -n 1 --nThreads 1 --procModifiers trackingLST
+# with command line options: Phase2 -s L1,L1TrackTrigger --conditions auto:phase2_realistic_T35 --geometry ExtendedRun4D110 --era Phase2C17I13M9 --eventcontent FEVTDEBUGHLT --datatier GEN-SIM-DIGI-RAW-MINIAOD --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000,Configuration/DataProcessing/Utils.addMonitoring,L1Trigger/Configuration/customisePhase2FEVTDEBUGHLT.customisePhase2FEVTDEBUGHLT,L1Trigger/Configuration/customisePhase2TTOn110.customisePhase2TTOn110 --filein /store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_AllTP_140X_mcRun4_realistic_v4-v1/2560000/0a3a9c9b-cf1a-4164-aa19-23b88809a4cf.root --fileout file:output_Phase2_L1T.root --python_filename rerunL1_cfg.py '--inputCommands=keep *, drop l1tPFJets_*_*_*, drop l1tTrackerMuons_l1tTkMuonsGmt*_*_HLT' '--outputCommands=drop l1tTrackerMuons_l1tTkMuonsGmt*_*_HLT' --mc -n 1 --nThreads 1
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C17I13M9_cff import Phase2C17I13M9
-from Configuration.ProcessModifiers.trackingLST_cff import trackingLST
 
-process = cms.Process('L1TrackTrigger',Phase2C17I13M9,trackingLST)
+process = cms.Process('L1TrackTrigger',Phase2C17I13M9)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -31,7 +30,7 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('/store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_AllTP_140X_mcRun4_realistic_v4-v1/2560000/11d1f6f0-5f03-421e-90c7-b5815197fc85.root'),
+    fileNames = cms.untracked.vstring('/store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_AllTP_140X_mcRun4_realistic_v4-v1/2560000/0a3a9c9b-cf1a-4164-aa19-23b88809a4cf.root'),
     inputCommands = cms.untracked.vstring(
         'keep *',
         'drop l1tPFJets_*_*_*',
@@ -81,15 +80,13 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 
-process.RAWoutput = cms.OutputModule("PoolOutputModule",
-    compressionAlgorithm = cms.untracked.string('LZMA'),
-    compressionLevel = cms.untracked.int32(4),
+process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW-MINIAOD'),
         filterName = cms.untracked.string('')
     ),
     fileName = cms.untracked.string('file:output_Phase2_L1T.root'),
-    outputCommands = process.RAWEventContent.outputCommands,
+    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
 
@@ -97,18 +94,17 @@ process.RAWoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T33', '')
-process.RAWoutput.outputCommands.append('keep *')
-process.RAWoutput.outputCommands.append('drop l1tTrackerMuons_l1tTkMuonsGmt*_*_HLT')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T35', '')
+process.FEVTDEBUGHLToutput.outputCommands.append('drop l1tTrackerMuons_l1tTkMuonsGmt*_*_HLT')
 
 # Path and EndPath definitions
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
 process.L1TrackTrigger_step = cms.Path(process.L1TrackTrigger)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.RAWoutput_step = cms.EndPath(process.RAWoutput)
+process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.L1simulation_step,process.L1TrackTrigger_step,process.endjob_step,process.RAWoutput_step)
+process.schedule = cms.Schedule(process.L1simulation_step,process.L1TrackTrigger_step,process.endjob_step,process.FEVTDEBUGHLToutput_step)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 

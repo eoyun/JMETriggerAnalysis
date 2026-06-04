@@ -4,7 +4,7 @@ executable = condor_job.sh
 # STEP=5 fixed
 START_SKIP = 0
 STEP       = 5
-DATE_TAG   = 260114
+DATE_TAG   = 260528
 
 arguments = $(Process) $(START_SKIP) $(STEP) $(DATE_TAG)
 

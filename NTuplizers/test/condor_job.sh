@@ -21,7 +21,7 @@ DATE_TAG="${4:?DATE_TAG missing}"
 
 FILE_EVT=1000
 
-mapfile -t filelist < vbfinv.dat
+mapfile -t filelist < qcd.dat
 
 [[ "${PROCESS}" =~ ^[0-9]+$ ]] || { echo "PROCESS not numeric: ${PROCESS}"; exit 2; }
 [[ "${START_SKIP}" =~ ^[0-9]+$ ]] || { echo "START_SKIP not numeric: ${START_SKIP}"; exit 2; }
@@ -69,7 +69,7 @@ fi
 EOS_XROOTD="root://eosuser.cern.ch"
 EOS_DIR="/eos/cms/store/user/yeo/Phase2/${DATE_TAG}"
 EOS_DIR_XRD="${EOS_XROOTD}//${EOS_DIR}"
-AFS_DIR="/afs/cern.ch/user/y/yeo/phase2/CMSSW_16_0_0_pre3/src/JMETriggerAnalysis/NTuplizers/test/260206_vbf"
+AFS_DIR="/afs/cern.ch/user/y/yeo/phase2/CMSSW_17_0_0_pre1/src/JMETriggerAnalysis/NTuplizers/test/260528_qcd"
 
 echo "EOS_DIR=${EOS_DIR}"
 echo "EOS_DIR_XRD=${EOS_DIR_XRD}"
@@ -78,7 +78,7 @@ echo "EOS_DIR_XRD=${EOS_DIR_XRD}"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 export SCRAM_ARCH=el8_amd64_gcc13
 
-cd /afs/cern.ch/user/y/yeo/phase2/CMSSW_16_0_0_pre3/src
+cd /afs/cern.ch/user/y/yeo/phase2/CMSSW_17_0_0_pre1/src
 eval "$(scramv1 runtime -sh)"
 
 # Ensure we use CMSSW-provided xrootd clients
@@ -100,10 +100,10 @@ cmsRun jmeTriggerNTuple_L1Only_cfg.py \
   inputFiles="${INPUT_FILE}"\
   output="L1_output_${IDX}.root"
 
-cmsRun jmeTriggerNTuple_cfg.py track=LST    inputFiles="file:L1_output_${IDX}.root" output="out_LST_${IDX}.root"
-cmsRun jmeTriggerNTuple_cfg.py track=MkFit  inputFiles="file:L1_output_${IDX}.root" output="out_MkFit_${IDX}.root"
-cmsRun jmeTriggerNTuple_cfg.py track=both   inputFiles="file:L1_output_${IDX}.root" output="out_both_${IDX}.root"
-cmsRun jmeTriggerNTuple_cfg.py track=menu   inputFiles="file:L1_output_${IDX}.root" output="out_menu_${IDX}.root"
+#cmsRun jmeTriggerNTuple_cfg.py track=LST    inputFiles="file:L1_output_${IDX}.root" output="out_LST_${IDX}.root"
+#cmsRun jmeTriggerNTuple_cfg.py track=MkFit  inputFiles="file:L1_output_${IDX}.root" output="out_MkFit_${IDX}.root"
+#cmsRun jmeTriggerNTuple_cfg.py track=both   inputFiles="file:L1_output_${IDX}.root" output="out_both_${IDX}.root"
+#cmsRun jmeTriggerNTuple_cfg.py track=menu   inputFiles="file:L1_output_${IDX}.root" output="out_menu_${IDX}.root"
 cmsRun jmeTriggerNTuple_cfg.py              inputFiles="file:L1_output_${IDX}.root" output="out_default_${IDX}.root"
 
 rm -f Phase2*HLT.root "L1_output_${IDX}.root" || true
