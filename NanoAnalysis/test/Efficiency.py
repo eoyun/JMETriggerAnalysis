@@ -26,8 +26,6 @@ def declare_struc():
 
 def analysis(filename_idx,idx,outputdir):
     declare_struc()
-def analysis(filename_idx,idx,outputdir):
-    # [1] Remote input path (XRootD)
     inputfile = "root://xrootd-cms.infn.it/"+filename_idx
     print(inputfile)
     df = ROOT.RDataFrame("Events",inputfile)
@@ -128,6 +126,7 @@ def analysis(filename_idx,idx,outputdir):
         df.Take[ROOT.UInt_t]("luminosityBlock").GetValue()
     )
     df = df.Define("counter","counter++")
+
     lumi_arr = ROOT.VecOps.AsRVec(lumi_values)
     df = ROOT.RDFAddArray(ROOT.RDF.AsRNode(df), lumi_arr, "LumiMask")
     df = df.Filter("LumiMask > 0.5","")

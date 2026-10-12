@@ -26,7 +26,6 @@ def declare_struc():
 
 def analysis(filename_idx,idx,outputdir):
     declare_struc()
-def analysis(filename_idx,idx,outputdir):
     # [1] Remote input path (XRootD)
     inputfile = "root://xrootd-cms.infn.it/"+filename_idx
     print(inputfile)
@@ -51,32 +50,58 @@ def analysis(filename_idx,idx,outputdir):
             )
     ROOT.gInterpreter.Declare(
             """
+            static inline float deltaPhi(float a, float b) {
+                // wrap into [-pi, pi]
+                float d = a - b;
+                constexpr float pi = 3.14159265358979323846f;
+                while (d >  pi) d -= 2.0f * pi;
+                while (d < -pi) d += 2.0f * pi;
+                return d;
+            }
             // [4] Match each offline jet to the nearest HLT jet within deltaR
-            vector<int> match_hlt_offline ( ROOT::VecOps::RVec<float> hlt_eta,ROOT::VecOps::RVec<float> hlt_phi,ROOT::VecOps::RVec<float> off_eta,ROOT::VecOps::RVec<float> off_phi){
-                vector<int> hlt_matched;
-                int off_index;
-                float dr=0.2;
-                if  (off_eta.size()==0 || hlt_eta.size()==0) {
-                    hlt_matched.push_back(-1);
-                    return hlt_matched;
+            std::vector<int> match_hlt_offline(
+                const ROOT::VecOps::RVec<float>& hlt_eta,
+                const ROOT::VecOps::RVec<float>& hlt_phi,
+                const ROOT::VecOps::RVec<float>& off_eta,
+                const ROOT::VecOps::RVec<float>& off_phi,
+                float dr = 0.2f
+            ){
+                std::vector<int> matched;
+                matched.reserve(off_eta.size());
+            
+                // basic size guards (avoid out-of-range)
+                if (hlt_eta.size() != hlt_phi.size() || off_eta.size() != off_phi.size()) {
+                    // return consistent shape: offline-sized vector filled with -1
+                    matched.assign(off_eta.size(), -1);
+                    return matched;
                 }
-                for (int i=0; i< off_eta.size();i++){
-                    off_index = -1;
-                    float best_dr2 = dr * dr;
-                    for (int j=0;j<hlt_eta.size();j++){
-                        float dphi = abs(hlt_phi[j]-off_phi[i]);
-                        if (dphi > M_PI) {
-                            dphi = 2 * M_PI - dphi;
-                        }
-                        float dr2 = pow(hlt_eta[j]-off_eta[i],2) + pow(dphi,2);
-                        if (dr2 < best_dr2){
-                            best_dr2 = dr2;
-                            off_index = j;
+            
+                if (off_eta.empty() || hlt_eta.empty()) {
+                    matched.assign(off_eta.size(), -1);
+                    return matched;
+                }
+            
+                const float dr2 = dr * dr;
+            
+                for (size_t i = 0; i < off_eta.size(); ++i) {
+                    int best_j = -1;
+                    float best_dr2 = dr2; // only accept matches strictly within dr
+            
+                    for (size_t j = 0; j < hlt_eta.size(); ++j) {
+                        const float deta = hlt_eta[j] - off_eta[i];
+                        const float dphi = deltaPhi(hlt_phi[j], off_phi[i]);
+                        const float d2   = deta * deta + dphi * dphi;
+            
+                        if (d2 < best_dr2) {
+                            best_dr2 = d2;
+                            best_j = static_cast<int>(j);
                         }
                     }
-                    hlt_matched.push_back(off_index);
+            
+                    matched.push_back(best_j);
                 }
-                return hlt_matched;
+            
+                return matched;
             }
             """
 
@@ -98,18 +123,15 @@ def analysis(filename_idx,idx,outputdir):
             }
             """
             )
+    bitmask_42 = 1 << 42
     df = df.Define("Delta_phi","dphi(Jet_phi[0],Jet_phi[1])")
     df = df.Define("alpha","nJet==2 ? 0 : 2 * Jet_pt[2]/(Jet_pt[0]+Jet_pt[1])")
     # [6] HLT jet collections (all jet-type trigger objects)
-    df = df.Define("Trig_obj_pt","TrigObj_pt[TrigObj_id == 1 ]")
-    df = df.Define("hlt_Jet_eta","TrigObj_eta[TrigObj_id == 1 ]")
-    df = df.Define("hlt_Jet_phi","TrigObj_phi[TrigObj_id == 1 ]")
-    df = df.Define("hlt_Jet_id","TrigObj_filterBits[TrigObj_id==1]")
+    df = df.Define("Trig_obj_pt",f"TrigObj_pt[TrigObj_id == 1 && (TrigObj_filterBits & {bitmask_42}) != 0]")
+    df = df.Define("hlt_Jet_eta",f"TrigObj_eta[TrigObj_id == 1 && (TrigObj_filterBits & {bitmask_42}) != 0]")
+    df = df.Define("hlt_Jet_phi",f"TrigObj_phi[TrigObj_id == 1 && (TrigObj_filterBits & {bitmask_42}) != 0]")
+    df = df.Define("hlt_Jet_id",f"TrigObj_filterBits[TrigObj_id==1&& (TrigObj_filterBits & {bitmask_42}) != 0]")
     df = df.Define("Jet_hlt_matched_index","match_hlt_offline(hlt_Jet_eta,hlt_Jet_phi,Jet_eta,Jet_phi)")
-    df = df.Define("hlt_Jet_off_matched_pt","get_or_default(Trig_obj_pt, Jet_hlt_matched_index[0], -1.0)")
-    df = df.Define("hlt_Jet_matched_id","get_or_default_int(hlt_Jet_id, Jet_hlt_matched_index[0], -1)")
-    df = df.Define("hlt_Jet_matched_eta","get_or_default(hlt_Jet_eta, Jet_hlt_matched_index[0], -99.0)")
-    df = df.Define("hlt_Jet_matched_phi","get_or_default(hlt_Jet_phi, Jet_hlt_matched_index[0], -99.0)")
     # [7] Apply certified lumisections
     lumi_mask = LumiMask.lumimask(int(args.era))
     lumi_values = lumi_mask(
@@ -120,21 +142,25 @@ def analysis(filename_idx,idx,outputdir):
     lumi_arr = ROOT.VecOps.AsRVec(lumi_values)
     df = ROOT.RDFAddArray(ROOT.RDF.AsRNode(df), lumi_arr, "LumiMask")
     df = df.Filter("LumiMask > 0.5","")
-    df = df.Filter("Jet_hlt_matched_index[0]!=-1","") 
-    df_after = df.Filter("Delta_phi>2.7","") 
+    df_after = df.Filter("Jet_hlt_matched_index[0]!=-1","") 
+    df_after = df_after.Define("hlt_Jet_off_matched_pt","Trig_obj_pt[Jet_hlt_matched_index[0]]")
+    df_after = df_after.Define("hlt_Jet_matched_id","hlt_Jet_id[Jet_hlt_matched_index[0]]")
+    df_after = df_after.Define("hlt_Jet_matched_eta","hlt_Jet_eta[Jet_hlt_matched_index[0]]")
+    df_after = df_after.Define("hlt_Jet_matched_phi","hlt_Jet_phi[Jet_hlt_matched_index[0]]")
+    df_after = df_after.Filter("Delta_phi>2.7","") 
     df_after = df_after.Filter("alpha < 0.1","") 
     df_after = df_after.Filter("HLT_PFJet320","") 
-    df = df.Filter("Lead_jet_eta < 1.3")
-    df_den_40  = df
-    df_den_60  = df.Filter("HLT_PFJet40","")
-    df_den_80  = df.Filter("HLT_PFJet60","")
-    df_den_140 = df.Filter("HLT_PFJet80","")
-    df_den_200 = df.Filter("HLT_PFJet140","")
-    df_den_260 = df.Filter("HLT_PFJet200","")
-    df_den_320 = df.Filter("HLT_PFJet260","")
-    df_den_400 = df.Filter("HLT_PFJet320","")
-    df_den_450 = df.Filter("HLT_PFJet400","")
-    df_den_500 = df.Filter("HLT_PFJet320","")
+    #df = df.Filter("abs(Lead_jet_eta) < 3.0")
+    df_den_40  = df_after
+    df_den_60  = df_after.Filter("HLT_PFJet40","")
+    df_den_80  = df_after.Filter("HLT_PFJet60","")
+    df_den_140 = df_after.Filter("HLT_PFJet80","")
+    df_den_200 = df_after.Filter("HLT_PFJet140","")
+    df_den_260 = df_after.Filter("HLT_PFJet200","")
+    df_den_320 = df_after.Filter("HLT_PFJet260","")
+    df_den_400 = df_after.Filter("HLT_PFJet320","")
+    df_den_450 = df_after.Filter("HLT_PFJet400","")
+    df_den_500 = df_after.Filter("HLT_PFJet320","")
 
     df_num_40  = df_den_40.Filter("hlt_Jet_off_matched_pt>40","") 
     df_num_60  = df_den_60.Filter("hlt_Jet_off_matched_pt>60","") 
@@ -158,10 +184,6 @@ def analysis(filename_idx,idx,outputdir):
     histo_dphi = df.Histo1D(("h_dphi", ";x-axis;y-axis", 100, 0, 3.14), "Delta_phi")
     histo_alpha = df.Histo1D(("h_alpha", ";x-axis;y-axis", 100, 0, 1), "alpha")
     histo_trig = df.Histo1D(("h_trig_pt",";pT;a.u.",100,0,1000),"Trig_obj_pt")
-    histo_matched = df.Histo1D(("h_hlt_matched_pt",";pT;a.u.",100,0,1000),"hlt_Jet_off_matched_pt")
-    histo_matched_id = df.Histo1D(("h_hlt_matched_id",";pT;a.u.",10000,0,10000),"hlt_Jet_matched_id")
-    histo_matched_eta = df.Histo1D(("h_hlt_matched_eta",";pT;a.u.",100,-5,5),"hlt_Jet_matched_eta")
-    histo_matched_phi = df.Histo1D(("h_hlt_matched_phi",";pT;a.u.",100,-3.2,3.2),"hlt_Jet_matched_phi")
 
     _after_histo = df_after.Histo1D(("after_h_pt_lead", ";x-axis;y-axis", 100, 0, 1000), "Lead_jet")
     _after_histo_sub = df_after.Histo1D(("after_h_pt_sub", ";x-axis;y-axis", 100, 0, 1000), "Sub_jet")
@@ -496,10 +518,6 @@ def analysis(filename_idx,idx,outputdir):
     histo_dphi.Write()
     histo_alpha.Write()
     histo_trig.Write()
-    histo_matched.Write()
-    histo_matched_id.Write()
-    histo_matched_eta.Write()
-    histo_matched_phi.Write()
 
     _after_histo.Write()
     _after_histo_sub.Write()

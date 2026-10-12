@@ -6,6 +6,10 @@ import callable_array
 
 class lumimask:
     def __init__(self, era = 2024):
+        if era == 2022 :
+            jsonfile = "/eos/user/c/cmsdqm/www/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json"
+        if era == 2023 :
+            jsonfile = "/eos/user/c/cmsdqm/www/CAF/certification/Collisions23/Cert_Collisions2023_366442_370790_Golden.json"
         if era == 2024 :
             jsonfile = "/eos/user/c/cmsdqm/www/CAF/certification/Collisions24/Cert_Collisions2024_378981_386951_Golden.json"
         if era == 2025 :

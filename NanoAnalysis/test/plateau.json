@@ -1,0 +1,16 @@
+{
+  "_comment": [
+    "Offline jet pT (GeV) above which each HLT_PFJet<path> is fully efficient.",
+    "Used for (1) the tag cut: for leg X the tag must satisfy plateau[reference(X)],",
+    "so that the reference trigger was fired by the TAG and the probe stays unbiased.",
+    "PROVISIONAL VALUES = the nominal path threshold. That is NOT the real plateau:",
+    "arXiv:2111.10431 Table 3 puts the 99.5% point at roughly 1.3-1.8x the threshold",
+    "(260 -> 362, 320 -> 430, 450 -> 592). Re-derive from the 1D turn-ons of this",
+    "analysis and replace the numbers here; the script needs no edit.",
+    "A null value disables the offline part of the cut for that path."
+  ],
+  "plateau": {
+    "40": 40, "60": 60, "80": 80, "110": 110, "140": 140, "200": 200,
+    "260": 260, "320": 320, "400": 400, "450": 450, "500": 500, "550": 550
+  }
+}
